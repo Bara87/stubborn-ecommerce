@@ -16,14 +16,11 @@ class Sweatshirt
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $size = null;
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $sizes = null; // Tableau JSON pour les tailles et le stock
 
     #[ORM\Column]
     private ?float $price = null;
-
-    #[ORM\Column]
-    private ?int $stock = null;
 
     #[ORM\Column]
     private ?bool $featured = null;
@@ -48,14 +45,14 @@ class Sweatshirt
         return $this;
     }
 
-    public function getSize(): ?string
+    public function getSizes(): ?array
     {
-        return $this->size;
+        return $this->sizes;
     }
 
-    public function setSize(string $size): static
+    public function setSizes(?array $sizes): static
     {
-        $this->size = $size;
+        $this->sizes = $sizes;
 
         return $this;
     }
@@ -68,18 +65,6 @@ class Sweatshirt
     public function setPrice(float $price): static
     {
         $this->price = $price;
-
-        return $this;
-    }
-
-    public function getStock(): ?int
-    {
-        return $this->stock;
-    }
-
-    public function setStock(int $stock): static
-    {
-        $this->stock = $stock;
 
         return $this;
     }
