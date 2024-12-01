@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>Tous les produits</h1>
+
+<!-- Formulaire de filtre par prix -->
+<form method="get" action="{{ path('app_products') }}">
+    <label for="minPrice">Prix minimum</label>
+    <input type="number" name="minPrice" id="minPrice" step="0.01" value="{{ app.request.query.get('minPrice', '') }}">
+
+    <label for="maxPrice">Prix maximum</label>
+    <input type="number" name="maxPrice" id="maxPrice" step="0.01" value="{{ app.request.query.get('maxPrice', '') }}">
+
+    <button type="submit">Filtrer</button>
+</form>
+
+<!-- Liste des produits -->
+<div>
+    {% for product in products %}
+    <div>
+        <h3>{{ product.name }}</h3>
+        <p>Prix : {{ product.price }} €</p>
+        {% if product.image %}
+            <img src="{{ product.imagePath }}" alt="{{ product.name }}" style="max-width: 200px;">
+        {% else %}
+            <p>Aucune image disponible</p>
+        {% endif %}
+    </div>
+{% endfor %}
+
+</div>
+{% endblock %}

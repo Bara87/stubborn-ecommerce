@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>{{ product.name }}</h1>
+
+{% if product.image %}
+    <img src="{{ asset('uploads/images/' ~ product.image) }}" alt="{{ product.name }}" style="max-width: 200px;">
+{% else %}
+    <p>Aucune image disponible</p>
+{% endif %}
+
+<p>Prix : {{ product.price }} €</p>
+
+<form method="post" action="{{ path('app_cart_add') }}">
+    <label for="size">Taille</label>
+    <select name="size" id="size">
+        <option value="XS">XS</option>
+        <option value="S">S</option>
+        <option value="M">M</option>
+        <option value="L">L</option>
+        <option value="XL">XL</option>
+    </select>
+    <button type="submit">Ajouter au panier</button>
+</form>
+{% endblock %}

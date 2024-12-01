@@ -28,6 +28,9 @@ class Sweatshirt
     #[ORM\Column]
     private ?bool $featured = null;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $imagePath = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -89,6 +92,18 @@ class Sweatshirt
     public function setFeatured(bool $featured): static
     {
         $this->featured = $featured;
+
+        return $this;
+    }
+
+    public function getImagePath(): ?string
+    {
+        return $this->imagePath;
+    }
+
+    public function setImagePath(?string $imagePath): self
+    {
+        $this->imagePath = $imagePath;
 
         return $this;
     }
