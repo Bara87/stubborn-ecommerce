@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Sweatshirts{% endblock %}
+
+{% block body %}
+    <h1>Liste des Sweatshirts</h1>
+
+    <a href="{{ path('admin_sweatshirt_new') }}">Ajouter un nouveau Sweatshirt</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Prix</th>
+                <th>Taille</th>
+                <th>Stock</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sweatshirt in sweatshirts %}
+                <tr>
+                    <td>{{ sweatshirt.name }}</td>
+                    <td>{{ sweatshirt.price }}</td>
+                    <td>{{ sweatshirt.size }}</td>
+                    <td>{{ sweatshirt.stock }}</td>
+                    <td>
+                        <a href="{{ path('admin_sweatshirt_edit', {'id': sweatshirt.id}) }}">Modifier</a>
+                        <a href="{{ path('admin_sweatshirt_delete', {'id': sweatshirt.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce sweatshirt ?')">Supprimer</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
