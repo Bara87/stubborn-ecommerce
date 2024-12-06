@@ -5,13 +5,33 @@
 {% block body %}
     <h1>Modifier un Sweatshirt</h1>
 
-    {{ form_start(form) }}
+    {{ form_start(form, { 'method': 'POST', 'enctype': 'multipart/form-data' }) }}
         {{ form_row(form.name) }}
         {{ form_row(form.price) }}
-        {{ form_row(form.size) }}
-        {{ form_row(form.stock) }}
+
+        <div class="sizes">
+            <label for="sizes">Tailles et Quantités</label>
+            <div id="sizes">
+                {% for size in form.sizes %}
+                    <div class="size-entry">
+                        {{ form_row(size) }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
         {{ form_row(form.featured) }}
+
+        <!-- Affichage de l'image actuelle -->
+        {% if sweatshirt.imagePath %}
+            <div>
+                <img src="{{ asset(sweatshirt.imagePath) }}" alt="Image actuelle" style="max-width: 100px;">
+            </div>
+        {% endif %}
+
         {{ form_row(form.image) }}
+
         <button type="submit">Mettre à jour</button>
     {{ form_end(form) }}
+
 {% endblock %}

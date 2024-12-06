@@ -5,13 +5,32 @@
 {% block body %}
     <h1>Ajouter un Sweatshirt</h1>
 
-    {{ form_start(form) }}
+    {% for label, messages in app.flashes %}
+        <div class="alert alert-{{ label }}">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+    {{ form_start(form, { 'method': 'POST', 'enctype': 'multipart/form-data' }) }}
         {{ form_row(form.name) }}
         {{ form_row(form.price) }}
-        {{ form_row(form.size) }}
-        {{ form_row(form.stock) }}
+
+        <div class="sizes">
+            <label for="sizes">Tailles et Quantités</label>
+            <div id="sizes">
+                {% for size in form.sizes %}
+                    <div class="size-entry">
+                        {{ form_row(size) }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
         {{ form_row(form.featured) }}
         {{ form_row(form.image) }}
+
         <button type="submit">Enregistrer</button>
     {{ form_end(form) }}
 {% endblock %}

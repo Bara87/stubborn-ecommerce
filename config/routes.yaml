@@ -3,3 +3,64 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+## Routes pour le frontend
+home:
+  path: /
+  controller: App\Controller\HomeController::index
+
+login:
+  path: /login
+  controller: App\Controller\SecurityController::login
+
+register:
+  path: /register
+  controller: App\Controller\SecurityController::register
+
+products:
+  path: /products
+  controller: App\Controller\ProductController::list
+
+product_detail:
+  path: /product/{id}
+  controller: App\Controller\ProductController::detail
+  requirements:
+    id: '\d+'
+
+cart:
+  path: /cart
+  controller: App\Controller\CartController::index
+
+# Routes pour l'administration
+promote_user:
+  path: /promote-user/{userId}
+  controller: App\Controller\AdminController::promoteUser
+  methods: [GET]
+  
+admin_dashboard:
+    path: /admin
+    controller: App\Controller\AdminController::dashboard
+
+admin_sweatshirt_list:
+  path: /admin/sweatshirts
+  controller: App\Controller\AdminController::list
+  methods: [GET]
+
+admin_sweatshirt_new:
+  path: /admin/sweatshirt/new
+  controller: App\Controller\AdminController::new
+  methods: [GET, POST]
+
+admin_sweatshirt_edit:
+  path: /admin/sweatshirt/{id}/edit
+  controller: App\Controller\AdminController::edit
+  methods: [GET, POST]
+  requirements:
+    id: '\d+'
+
+admin_sweatshirt_delete:
+  path: /admin/sweatshirt/{id}/delete
+  controller: App\Controller\AdminController::delete
+  methods: [POST]
+  requirements:
+    id: '\d+'

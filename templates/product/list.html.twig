@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Produits{% endblock %}
+
+{% block body %}
+<h1>Liste des Produits</h1>
+
+<!-- Formulaire de filtre par prix (visible pour tous) -->
+<form method="get" action="{{ path('app_products') }}">
+    <label for="minPrice">Prix minimum</label>
+    <input type="number" name="minPrice" id="minPrice" step="0.01" value="{{ app.request.query.get('minPrice', '') }}">
+
+    <label for="maxPrice">Prix maximum</label>
+    <input type="number" name="maxPrice" id="maxPrice" step="0.01" value="{{ app.request.query.get('maxPrice', '') }}">
+
+    <button type="submit">Filtrer</button>
+</form>
+
+<!-- Liste des produits -->
+<div>
+    {% for product in products %}
+        <div>
+            <h3>{{ product.name }}</h3>
+            <p>Prix : {{ product.price }} €</p>
+            {% if product.imagePath %}
+                <a href="{{ path('app_product_detail', {'id': product.id}) }}">
+                    <img src="{{ product.imagePath }}" alt="{{ product.name }}" style="max-width: 200px;">
+                </a>
+            {% else %}
+                <p>Aucune image disponible</p>
+            {% endif %}
+
+            <!-- Actions supplémentaires pour l'admin -->
+            {% if is_granted('ROLE_ADMIN') %}
+                <div>
+                    <a href="{{ path('admin_sweatshirt_edit', {'id': product.id}) }}">Modifier</a>
+                    <a href="{{ path('admin_sweatshirt_delete', {'id': product.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')">Supprimer</a>
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Bouton d'ajout visible uniquement pour l'admin -->
+{% if is_granted('ROLE_ADMIN') %}
+    <a href="{{ path('admin_sweatshirt_new') }}">Ajouter un nouveau produit</a>
+{% endif %}
+{% endblock %}
