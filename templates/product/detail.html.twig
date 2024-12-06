@@ -3,8 +3,10 @@
 {% block body %}
 <h1>{{ product.name }}</h1>
 
-{% if product.image %}
-    <img src="{{ product.imagePath }}"  alt="{{ product.name }}" style="max-width: 200px;">
+{% if product.imagePath %}
+    <a href="{{ path('app_product_detail', { id: product.id }) }}">
+        <img src="{{ product.imagePath }}" alt="{{ product.name }}" style="max-width: 200px;">
+    </a>
 {% else %}
     <p>Aucune image disponible</p>
 {% endif %}
@@ -13,13 +15,34 @@
 
 <form method="post" action="{{ path('app_cart_add', { id: product.id }) }}">
     <label for="size">Taille</label>
-    <select name="size" id="size">
+    <select name="size" id="size" onchange="updateMaxQuantity()">
         <option value="XS">XS</option>
         <option value="S">S</option>
         <option value="M">M</option>
         <option value="L">L</option>
         <option value="XL">XL</option>
     </select>
+
+    <label for="quantity">Quantité</label>
+    <input type="number" name="quantity" id="quantity" value="1" min="1" 
+           required>
+
     <button type="submit">Ajouter au panier</button>
 </form>
+
+<script>
+    // Récupérer le stock des tailles du produit
+    var sizes = {{ product.sizes|json_encode() | raw }};
+    
+    // Mettre à jour la valeur maximale de quantité en fonction de la taille sélectionnée
+    function updateMaxQuantity() {
+        var size = document.getElementById('size').value;
+        var maxQuantity = sizes[size];  // Obtenez la quantité max pour la taille choisie
+        document.getElementById('quantity').setAttribute('max', maxQuantity);
+    }
+
+    // Initialiser la valeur maximale de quantité lors du chargement de la page
+    updateMaxQuantity();
+</script>
+
 {% endblock %}

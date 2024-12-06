@@ -17,7 +17,7 @@ class Sweatshirt
     private ?string $name = null;
 
     #[ORM\Column(type: 'json', nullable: true)]
-    private ?array $sizes = null; // Tableau JSON pour les tailles et le stock
+    private ?array $sizes = null; // Tableau JSON pour les tailles et quantité
 
     #[ORM\Column]
     private ?float $price = null;
@@ -27,6 +27,7 @@ class Sweatshirt
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $imagePath = null;
+
 
     public function getId(): ?int
     {
@@ -92,4 +93,6 @@ class Sweatshirt
 
         return $this;
     }
+
+    
 }

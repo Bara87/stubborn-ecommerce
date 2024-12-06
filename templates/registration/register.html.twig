@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+    <h1>Créer un compte</h1>
+
+    <!-- Début du formulaire d'inscription -->
+    {{ form_start(registrationForm) }}
+    
+        <div>
+            {{ form_label(registrationForm.name, 'Nom') }}
+            {{ form_widget(registrationForm.name, { 'attr': {'placeholder': 'Votre nom complet'} }) }}
+            {{ form_errors(registrationForm.name) }}
+        </div>
+
+        <div>
+            {{ form_label(registrationForm.email, 'Adresse email') }}
+            {{ form_widget(registrationForm.email, { 'attr': {'placeholder': 'Votre adresse email'} }) }}
+            {{ form_errors(registrationForm.email) }}
+        </div>
+
+        <div>
+            {{ form_label(registrationForm.plainPassword, 'Mot de passe') }}
+            {{ form_widget(registrationForm.plainPassword, { 'attr': {'placeholder': 'Votre mot de passe'} }) }}
+            {{ form_errors(registrationForm.plainPassword) }}
+        </div>
+
+        <div>
+            {{ form_label(registrationForm.deliveryAddress, 'Adresse de livraison') }}
+            {{ form_widget(registrationForm.deliveryAddress, { 'attr': {'placeholder': 'Adresse complète (optionnelle)'} }) }}
+            {{ form_errors(registrationForm.deliveryAddress) }}
+        </div>
+
+        <button type="submit">S'inscrire</button>
+    
+    {{ form_end(registrationForm) }}
+    <!-- Fin du formulaire -->
+
+    <!-- Lien pour les utilisateurs déjà inscrits -->
+    <p>
+        Déjà inscrit ? <a href="{{ path('app_login') }}">Connectez-vous ici</a>.
+    </p>
+{% endblock %}
+

@@ -25,7 +25,7 @@
                     <td>{{ item.quantity }}</td>
                     <td>{{ item.price * item.quantity }} €</td>
                     <td>
-                        <a href="{{ path('app_cart_remove', {id: item.id}) }}">Retirer</a>
+                        <a href="{{ path('app_cart_remove', {id: item.id, size: item.size}) }}">Retirer</a>
                     </td>
                 </tr>
             {% endfor %}

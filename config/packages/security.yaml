@@ -1,45 +1,58 @@
 security:
+    # Configuration des algorithmes de hachage pour les mots de passe
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 
+    # Configuration des providers pour récupérer les utilisateurs
     providers:
         app_user_provider:
             entity:
                 class: App\Entity\User
                 property: email
 
+    # Configuration des firewalls
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
         main:
-            stateless: true
-            provider: app_user_provider
+            stateless: false
+            
             form_login:
-                login_path: login
-                check_path: login
+                login_path: app_login
+                check_path: app_login
+                default_target_path: /
+                username_parameter: email
+                password_parameter: password
+                csrf_parameter: _csrf_token
+                csrf_token_id: authenticate
+                enable_csrf: true
+            
             logout:
-                path: logout
+                path: app_logout
+                target: app_login
             
-            # Ajoutez l'entry_point avec form_login
-        
+            # Entry point pour déterminer la méthode d'authentification par défaut
             entry_point: form_login
-            
-            
 
+            # Configuration de la fonctionnalité "Se souvenir de moi"
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800
                 path: /
-                # by default, the feature is enabled by checking a checkbox in the
-                # login form, uncomment the following line to always enable it.
+                # Uncomment the following line to always enable remember me
                 #always_remember_me: true
 
+    # Contrôle d'accès basé sur les rôles
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/cart, roles: ROLE_USER }
+        - { path: ^/products, roles: ROLE_USER }
+        - { path: ^/product, roles: ROLE_USER }
+        
 
+# Configuration spécifique pour l'environnement "test"
 when@test:
     security:
         password_hashers:

@@ -10,21 +10,25 @@
     </section>
 
     <!-- Section des produits mis en avant -->
-    <section>
-        <h2>Nos sweat-shirts mis en avant</h2>
-        <div class="featured-products">
-            {% for product in featuredSweatshirts %}
-                <div class="product-card">
-                    <h3>{{ product.name }}</h3>
-                    <img src="{{ product.image }}" alt="{{ product.name }}">
-                    <p>Prix : {{ product.price }} €</p>
-
-                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                        <!-- Bouton visible uniquement si l'utilisateur est connecté -->
+    {% if user %}
+        <section>
+            <h2>Nos sweat-shirts mis en avant</h2>
+            <div class="featured-products">
+                {% for product in featuredSweatshirts %}
+                    <div class="product-card">
+                        <h3>{{ product.name }}</h3>
+                        {% if product.imagePath %}
+                            <img src="{{ product.imagePath }}" alt="{{ product.name }}">
+                        {% else %}
+                            <p>Aucune image disponible</p>
+                        {% endif %}
+                        <p>Prix : {{ product.price }} €</p>
                         <a href="{{ path('app_product_detail', { id: product.id }) }}" class="btn">Voir</a>
-                    {% endif %}
-                </div>
-            {% endfor %}
-        </div>
-    </section>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% else %}
+        <p>Veuillez vous connecter pour voir les produits mis en avant.</p>
+    {% endif %}
 {% endblock %}

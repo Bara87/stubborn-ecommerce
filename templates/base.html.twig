@@ -4,6 +4,14 @@
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        <style>
+            /* CSS pour le lien actif */
+            a.active {
+                font-weight: bold;
+                text-decoration: underline;
+                color: #007bff;
+            }
+        </style>
         {% block stylesheets %}
         {% endblock %}
 
@@ -11,6 +19,24 @@
         {% endblock %}
     </head>
     <body>
+  <nav>
+    <ul>
+        <li><a href="{{ path('home') }}" class="{% if app.request.pathinfo == path('home') %}active{% endif %}">Accueil</a></li>
+
+        {% if not app.user %}
+            <li><a href="{{ path('register') }}" class="{% if app.request.pathinfo == path('register') %}active{% endif %}">S'inscrire</a></li>
+            <li><a href="{{ path('login') }}" class="{% if app.request.pathinfo == path('login') %}active{% endif %}">Se connecter</a></li>
+        {% else %}
+            <li><a href="{{ path('products') }}" class="{% if app.request.pathinfo == path('products') %}active{% endif %}">Boutique</a></li>
+            <li><a href="{{ path('cart') }}" class="{% if app.request.pathinfo == path('cart') %}active{% endif %}">Panier</a></li>
+            <li><a href="{{ path('app_logout') }}">Se déconnecter</a></li>
+        {% endif %}
+    </ul>
+</nav>
+    
+
+    <div class="content">
         {% block body %}{% endblock %}
-    </body>
-</html>
+    </div>
+</body>
+</html> 

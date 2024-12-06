@@ -2,22 +2,25 @@
 
 namespace App\Controller;
 
-use App\Repository\SweatshirtRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use App\Repository\SweatshirtRepository;
 
 class HomeController extends AbstractController
 {
-    #[Route('/', name: 'app_home')]
     public function index(SweatshirtRepository $sweatshirtRepository): Response
-    {
-        // Récupère les sweat-shirts mis en avant
-        $featuredSweatshirts = $sweatshirtRepository->findBy(['featured' => true], null, 3);
-
+    {   
+        $user = $this->getUser();
+        // Récupère trois sweat-shirts mis en avant depuis la base de données
+        $featuredSweatshirts = $sweatshirtRepository->findBy(
+            ['featured' => true], // Exemple de champ pour les produits mis en avant
+            null,
+            3
+        );
 
         return $this->render('home/index.html.twig', [
-            'featuredSweatshirts' => $featuredSweatshirts,
+            'user' => $user,
+            'featuredSweatshirts' => $featuredSweatshirts, // Assurez-vous de transmettre cette variable
             'companyName' => 'Stubborn',
             'slogan' => 'Don\'t compromise on your look',
         ]);
