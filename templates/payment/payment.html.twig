@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Page de paiement</h1>
+    <p>Vous êtes sur le point de procéder au paiement.</p>
+
+    <form action="{{ path('create_checkout_session') }}" method="POST">
+        <button type="submit">Procéder au paiement</button>
+    </form>
+{% endblock %}
