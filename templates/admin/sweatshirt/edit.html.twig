@@ -5,33 +5,28 @@
 {% block body %}
     <h1>Modifier un Sweatshirt</h1>
 
-    {{ form_start(form, { 'method': 'POST', 'enctype': 'multipart/form-data' }) }}
-        {{ form_row(form.name) }}
-        {{ form_row(form.price) }}
+   <form method="POST" enctype="multipart/form-data">
+    <label for="name">Nom :</label>
+    <input type="text" id="name" name="name" value="{{ sweatshirt.name }}" required>
 
-        <div class="sizes">
-            <label for="sizes">Tailles et Quantités</label>
-            <div id="sizes">
-                {% for size in form.sizes %}
-                    <div class="size-entry">
-                        {{ form_row(size) }}
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
+    <label for="price">Prix :</label>
+    <input type="number" id="price" name="price" value="{{ sweatshirt.price }}" step="0.01" required>
 
-        {{ form_row(form.featured) }}
+    <label for="sizes">Tailles :</label>
+    <input type="text" id="sizes" name="sizes[]" value="{{ sweatshirt.sizes|keys|join(', ') }}" required>
 
-        <!-- Affichage de l'image actuelle -->
-        {% if sweatshirt.imagePath %}
-            <div>
-                <img src="{{ asset(sweatshirt.imagePath) }}" alt="Image actuelle" style="max-width: 100px;">
-            </div>
-        {% endif %}
+    <label for="quantities">Quantités :</label>
+    <input type="text" id="quantities" name="quantities[]" value="{{ sweatshirt.sizes|map(s => s)|join(', ') }}" required>
 
-        {{ form_row(form.image) }}
 
-        <button type="submit">Mettre à jour</button>
-    {{ form_end(form) }}
+    <label for="featured">En vedette :</label>
+    <input type="checkbox" id="featured" name="featured" {% if sweatshirt.featured %}checked{% endif %}>
+
+    <label for="image">Image :</label>
+    <input type="file" id="image" name="image" accept=".jpg,.jpeg">
+
+    <button type="submit">Modifier</button>
+</form>
+
 
 {% endblock %}

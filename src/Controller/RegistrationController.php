@@ -54,7 +54,7 @@ class RegistrationController extends AbstractController
             ], \Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL);
 
             $email = (new Email())
-                ->from('noreply@votre-site.com')
+                ->from('aliounedia2010@gmail.com')
                 ->to($user->getEmail())
                 ->subject('Activation de votre compte')
                 ->html('<p>Pour activer votre compte, cliquez sur le lien suivant : <a href="' . $activationUrl . '">Activer mon compte</a></p>');

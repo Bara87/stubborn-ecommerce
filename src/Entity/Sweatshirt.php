@@ -16,18 +16,17 @@ class Sweatshirt
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(type: 'json', nullable: true)]
-    private ?array $sizes = null; // Tableau JSON pour les tailles et quantité
-
     #[ORM\Column]
     private ?float $price = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?array $sizes = null;
 
     #[ORM\Column]
     private ?bool $featured = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $imagePath = null;
-
 
     public function getId(): ?int
     {
@@ -46,18 +45,6 @@ class Sweatshirt
         return $this;
     }
 
-    public function getSizes(): ?array
-    {
-        return $this->sizes;
-    }
-
-    public function setSizes(?array $sizes): static
-    {
-        $this->sizes = $sizes;
-
-        return $this;
-    }
-
     public function getPrice(): ?float
     {
         return $this->price;
@@ -66,6 +53,18 @@ class Sweatshirt
     public function setPrice(float $price): static
     {
         $this->price = $price;
+
+        return $this;
+    }
+
+    public function getSizes(): ?array
+    {
+        return $this->sizes;
+    }
+
+    public function setSizes(?array $sizes): static
+    {
+        $this->sizes = $sizes;
 
         return $this;
     }
@@ -87,12 +86,10 @@ class Sweatshirt
         return $this->imagePath;
     }
 
-    public function setImagePath(?string $imagePath): self
+    public function setImagePath(?string $imagePath): static
     {
         $this->imagePath = $imagePath;
 
         return $this;
     }
-
-    
 }
