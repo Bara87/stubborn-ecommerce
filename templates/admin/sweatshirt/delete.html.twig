@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Confirmer la suppression{% endblock %}
+
+{% block body %}
+    <h1>Confirmer la suppression du Sweatshirt</h1>
+
+    <p>Êtes-vous sûr de vouloir supprimer le sweatshirt "{{ sweatshirt.name }}" ?</p>
+
+    <form method="POST" action="{{ path('admin_sweatshirt_delete', {'id': sweatshirt.id}) }}">
+        <button type="submit" class="btn btn-danger">Oui, supprimer</button>
+        <a href="{{ path('admin_sweatshirt_list') }}" class="btn btn-secondary">Annuler</a>
+    </form>
+{% endblock %}

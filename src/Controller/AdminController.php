@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\User;
+
 use App\Entity\Sweatshirt;
+
 use App\Form\SweatshirtType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -53,8 +55,8 @@ class AdminController extends AbstractController
     {
         $sweatshirts = $entityManager->getRepository(Sweatshirt::class)->findAll();
 
-        return $this->render('admin/sweatshirt/list.html.twig', [
-            'sweatshirts' => $sweatshirts,
+        return $this->render('product/list.html.twig', [
+            'products' => $sweatshirts,
         ]);
     }
     
@@ -233,10 +235,12 @@ public function edit(Request $request, Sweatshirt $sweatshirt, EntityManagerInte
     ]);
 }
 
-    // Route pour supprimer un sweatshirt
-    #[Route('/admin/sweatshirt/{id}/delete', name: 'admin_sweatshirt_delete')]
-    public function delete(Sweatshirt $sweatshirt, EntityManagerInterface $entityManager): Response
-    {
+    // Route pour la suppression avec confirmation
+#[Route('/admin/sweatshirt/{id}/delete', name: 'admin_sweatshirt_delete', methods: ['GET', 'POST'])]
+public function delete(Sweatshirt $sweatshirt, EntityManagerInterface $entityManager, Request $request): Response
+{
+    // Si la requête est en méthode POST, procéder à la suppression
+    if ($request->isMethod('POST')) {
         // Supprimer l'image si elle existe
         $imagePath = $this->getParameter('kernel.project_dir') . '/public' . $sweatshirt->getImagePath();
         if (file_exists($imagePath)) {
@@ -250,4 +254,11 @@ public function edit(Request $request, Sweatshirt $sweatshirt, EntityManagerInte
         $this->addFlash('success', 'Sweatshirt supprimé avec succès !');
         return $this->redirectToRoute('admin_sweatshirt_list');
     }
+
+    // Si la méthode est GET, afficher la confirmation de suppression
+    return $this->render('admin/sweatshirt/delete.html.twig', [
+        'sweatshirt' => $sweatshirt,
+    ]);
+}
+
 }

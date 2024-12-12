@@ -61,6 +61,6 @@ admin_sweatshirt_edit:
 admin_sweatshirt_delete:
   path: /admin/sweatshirt/{id}/delete
   controller: App\Controller\AdminController::delete
-  methods: [POST]
+  methods: [GET, POST]
   requirements:
     id: '\d+'
