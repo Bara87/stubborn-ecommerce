@@ -130,9 +130,19 @@ class CartController extends AbstractController
             return $this->redirectToRoute('app_cart');
         }
 
-        // Logique pour la validation ou redirection vers le paiement
-        return $this->render('cart/checkout.html.twig', [
-            'cart' => $cart,
-        ]);
+        // Calculer le total
+        $total = 0;
+        foreach ($cart as $item) {
+            $total += $item['price'] * $item['quantity'];
+        }
+
+        // Passer le total à la session, si nécessaire
+        $session->set('checkout_total', $total);
+
+        // Afficher la page de checkout (panier) avant la redirection vers le paiement
+    return $this->render('cart/checkout.html.twig', [
+        'cart' => $cart,
+        'total' => $total,
+    ]);
     }
 }
