@@ -14,8 +14,8 @@ class ProductController extends AbstractController
     public function index(SweatshirtRepository $repository, Request $request): Response
     {
         // Récupérer les filtres de la requête (par exemple, fourchette de prix)
-        $minPrice = $request->query->get('minPrice', 0);
-        $maxPrice = $request->query->get('maxPrice', PHP_INT_MAX);
+        $minPrice = (float) $request->query->get('minPrice', 0);
+        $maxPrice = (float) $request->query->get('maxPrice', PHP_INT_MAX);
 
         // Si une plage de prix est définie, appliquer le filtre
         if ($minPrice !== null && $maxPrice !== null) {

@@ -1,36 +1,82 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Ajouter un Sweatshirt{% endblock %}
+{% block title %}Créer un nouveau produit{% endblock %}
 
 {% block body %}
-    <h1>Ajouter un Sweatshirt</h1>
+    <h1>Créer un nouveau produit</h1>
 
-    {% for label, messages in app.flashes %}
-        <div class="alert alert-{{ label }}">
-            {% for message in messages %}
-                <p>{{ message }}</p>
-            {% endfor %}
+    <form action="{{ path('admin_sweatshirt_create') }}" method="POST" enctype="multipart/form-data">
+        <div>
+            <label for="name">Nom</label>
+            <input type="text" id="name" name="name" required>
         </div>
-    {% endfor %}
 
-    {{ form_start(form, { 'method': 'POST', 'enctype': 'multipart/form-data' }) }}
-        {{ form_row(form.name) }}
-        {{ form_row(form.price) }}
+        <div>
+            <label for="price">Prix</label>
+            <input type="number" id="price" name="price" step="0.01" required>
+        </div>
 
-        <div class="sizes">
-            <label for="sizes">Tailles et Quantités</label>
-            <div id="sizes">
-                {% for size in form.sizes %}
-                    <div class="size-entry">
-                        {{ form_row(size) }}
-                    </div>
-                {% endfor %}
+        <div>
+            <label for="image">Image</label>
+            <input type="file" id="image" name="image">
+        </div>
+
+        <div>
+            <h3>Tailles et Quantités</h3>
+            <div id="sizesQuantities">
+                <div class="size-quantity">
+                    <label for="sizes">Taille</label>
+                    <select name="sizes[]" required>
+                        <option value="XS">XS</option>
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                    </select>
+
+                    <label for="quantities">Quantité</label>
+                    <input type="number" name="quantities[]" min="0" value="0" required>
+                </div>
             </div>
+            <button type="button" id="addSizeQuantity">Ajouter une taille/quantité</button>
         </div>
 
-        {{ form_row(form.featured) }}
-        {{ form_row(form.image) }}
+        <button type="submit">Créer</button>
+    </form>
 
-        <button type="submit">Enregistrer</button>
-    {{ form_end(form) }}
+    <script>
+        // Fonction pour ajouter dynamiquement une nouvelle taille et quantité
+        document.getElementById('addSizeQuantity').addEventListener('click', function() {
+            var sizesQuantitiesDiv = document.getElementById('sizesQuantities');
+            
+            // Créer un nouvel élément de taille/quantité
+            var newSizeQuantity = document.createElement('div');
+            newSizeQuantity.classList.add('size-quantity');
+
+            // Ajouter un select pour la taille
+            var sizeSelect = document.createElement('select');
+            sizeSelect.name = 'sizes[]';
+            sizeSelect.required = true;
+            sizeSelect.innerHTML = `
+                <option value="XS">XS</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+            `;
+            newSizeQuantity.appendChild(sizeSelect);
+
+            // Ajouter un champ pour la quantité
+            var quantityInput = document.createElement('input');
+            quantityInput.type = 'number';
+            quantityInput.name = 'quantities[]';
+            quantityInput.min = '0';
+            quantityInput.value = '0';
+            quantityInput.required = true;
+            newSizeQuantity.appendChild(quantityInput);
+
+            // Ajouter le nouveau champ à la div des tailles et quantités
+            sizesQuantitiesDiv.appendChild(newSizeQuantity);
+        });
+    </script>
 {% endblock %}
