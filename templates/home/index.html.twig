@@ -11,14 +11,14 @@
 
     <!-- Section des produits mis en avant -->
     {% if user %}
-        <section>
+        <section class="featured-section">
             <h2>Nos sweat-shirts mis en avant</h2>
             <div class="featured-products">
                 {% for product in featuredSweatshirts %}
                     <div class="product-card">
                         <h3>{{ product.name }}</h3>
                         {% if product.imagePath %}
-                            <img src="{{ product.imagePath }}" alt="{{ product.name }}">
+                            <img src="{{ product.imagePath }}" alt="{{ product.name }}" class="product-image">
                         {% else %}
                             <p>Aucune image disponible</p>
                         {% endif %}
@@ -29,6 +29,83 @@
             </div>
         </section>
     {% else %}
-        <p>Veuillez vous connecter pour voir les produits mis en avant.</p>
+        <p>Veuillez vous <a href="{{ path('app_login') }}">connecter </a>pour voir les produits mis en avant.</p>
     {% endif %}
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        /* Style de la section de présentation de la société */
+        section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: #f1f1f1;
+            border-radius: 8px;
+        }
+
+        section h1 {
+            margin-bottom: 10px;
+        }
+
+        section p {
+            margin: 5px 0;
+            font-size: 1.1em;
+        }
+
+        /* Section des produits mis en avant */
+        .featured-section {
+            text-align: center; /* Centrer le titre et le contenu de la section */
+        }
+
+        .featured-products {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center; /* Centrer les produits */
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .product-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            width: 250px;
+            text-align: center;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card h3 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .product-card img {
+            max-width: 200px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .product-card p {
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Message pour les utilisateurs non connectés */
+        section p {
+            color: #d9534f;
+        }
+    </style>
 {% endblock %}
