@@ -64,3 +64,8 @@ admin_sweatshirt_delete:
   methods: [GET, POST]
   requirements:
     id: '\d+'
+
+api_products:
+  path: /api/products
+  controller: App\Controller\ProductController::index
+  methods: GET

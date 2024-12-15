@@ -1,0 +1,152 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Back-Office - Liste des Sweatshirts{% endblock %}
+
+{% block body %}
+<style>
+    .container-fluid {
+        margin-top: 20px;
+    }
+
+    .row.justify-content-center {
+        display: flex;
+        justify-content: center;
+    }
+
+    .col-12, .col-md-10, .col-lg-8 {
+        padding: 0;
+    }
+
+    .mb-4 {
+        margin-bottom: 20px;
+    }
+
+    /* Style de la table */
+    .table-responsive {
+        margin-bottom: 20px;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .thead-dark {
+        background-color: #343a40;
+        color: white;
+    }
+
+    .table th, .table td {
+        padding: 12px 20px;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    /* Bordures autour des produits */
+    .bordered-product {
+        border: 1px solid #ddd;
+        margin-bottom: 10px;
+        background-color: #fff;
+    }
+
+    .img-thumbnail {
+        height: 80px;
+        width: auto;
+        max-width: 100%;
+    }
+
+    .table .btn {
+        margin-right: 10px;
+    }
+
+    /* Boutons de la table */
+    .btn-sm {
+        font-size: 0.8rem;
+        padding: 5px 10px;
+    }
+
+    .d-flex {
+        display: flex;
+        justify-content: center;
+    }
+    
+    .me-2 {
+        margin-right: 10px;
+    }
+
+    .mb-1 {
+        margin-bottom: 5px;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+            
+            {# Titre de la page #}
+            <div class="mb-4">
+                <h3 class="text-center">Liste des Sweatshirts</h3>
+            </div>
+
+            {# Table des produits #}
+            <div class="table-responsive mb-4">
+                <table class="table table-striped table-bordered text-center">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th class="align-middle">Image</th>
+                            <th class="align-middle">Nom</th>
+                            <th class="align-middle">Prix</th>
+                            <th class="align-middle">Stock XS</th>
+                            <th class="align-middle">Stock S</th>
+                            <th class="align-middle">Stock M</th>
+                            <th class="align-middle">Stock L</th>
+                            <th class="align-middle">Stock XL</th>
+                            <th class="align-middle">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                            <tr class="bordered-product">
+                                {# Affichage de l'image #}
+                                <td class="align-middle">
+                                    {% if product.imagePath %}
+                                        <img src="{{(product.imagePath) }}" alt="{{ product.name }}" 
+                                             class="img-thumbnail">
+                                    {% else %}
+                                        <p class="text-muted">Pas d'image</p>
+                                    {% endif %}
+                                </td>
+
+                                {# Champs du produit #}
+                                <td class="align-middle">{{ product.name }}</td>
+                                <td class="align-middle">{{ product.price }} €</td>
+                                {# Affichage des stocks par taille #}
+                                {% for size in ['XS', 'S', 'M', 'L', 'XL'] %}
+                                    <td class="align-middle">{{ product.sizes[size] }}</td>
+                                {% endfor %}
+                                
+                                {# Boutons Modifier/Supprimer #}
+                                <td class="align-middle">
+                                    <div class="d-flex">
+                                        <a href="{{ path('admin_sweatshirt_edit', {'id': product.id}) }}" 
+                                           class="btn btn-warning btn-sm mb-1 me-2">Modifier</a>
+                                        <a href="{{ path('admin_sweatshirt_delete', {'id': product.id}) }}" 
+                                           class="btn btn-danger btn-sm" 
+                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?');">
+                                           Supprimer
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="9" class="text-muted">Aucun produit trouvé.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

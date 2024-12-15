@@ -3,25 +3,25 @@
 {% block title %}Liste des Produits{% endblock %}
 
 {% block body %}
-<!-- Bouton d'ajout visible uniquement pour l'admin -->
-{% if is_granted('ROLE_ADMIN') %}
-    <a href="{{ path('admin_sweatshirt_new') }}" class="add-button">Ajouter un nouveau produit</a>
-{% endif %}
+
 <h1>Liste des Produits</h1>
-
-<!-- Formulaire de filtre par prix (visible pour tous) -->
-<form method="get" action="{{ path('app_products') }}" class="filter-form">
-    <label for="minPrice">Prix minimum</label>
-    <input type="number" name="minPrice" id="minPrice" step="0.01" value="{{ app.request.query.get('minPrice', '') }}">
-
-    <label for="maxPrice">Prix maximum</label>
-    <input type="number" name="maxPrice" id="maxPrice" step="0.01" value="{{ app.request.query.get('maxPrice', '') }}">
-
-    <button type="submit">Filtrer</button>
-</form>
 
 <!-- Liste des produits -->
 <div class="product-list">
+    <!-- Barre de recherche traitée comme un produit -->
+    <div class="product-item filter-item">
+        <form method="get" action="{{ path('app_products') }}" class="filter-form">
+            <label for="minPrice">Prix minimum</label>
+            <input type="number" name="minPrice" id="minPrice" step="0.01" value="{{ app.request.query.get('minPrice', '') }}">
+
+            <label for="maxPrice">Prix maximum</label>
+            <input type="number" name="maxPrice" id="maxPrice" step="0.01" value="{{ app.request.query.get('maxPrice', '') }}">
+
+            <button type="submit">Filtrer</button>
+        </form>
+    </div>
+
+    <!-- Produits -->
     {% for product in products %}
         <div class="product-item">
             <h3>{{ product.name }}</h3>
@@ -34,61 +34,40 @@
                 <p>Aucune image disponible</p>
             {% endif %}
 
-            <!-- Actions supplémentaires pour l'admin -->
-            {% if is_granted('ROLE_ADMIN') %}
-                <div class="admin-actions">
-                    <a href="{{ path('admin_sweatshirt_edit', {'id': product.id}) }}">Modifier</a>
-                    <a href="{{ path('admin_sweatshirt_delete', {'id': product.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')">Supprimer</a>
-                </div>
-            {% endif %}
+            
         </div>
     {% endfor %}
 </div>
 
-
-
 <style>
-    /* Style du formulaire de filtre */
-    .filter-form {
-        margin-bottom: 20px;
-    }
-
-    .filter-form label {
-        margin-right: 10px;
-    }
-
-    .filter-form input {
-        margin-bottom: 10px;
-        padding: 5px;
-    }
-
-    .filter-form button {
-        padding: 5px 10px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        cursor: pointer;
-    }
-
-    .filter-form button:hover {
-        background-color: #45a049;
-    }
-
-    /* Conteneur principal pour les produits */
+    /* Conteneur principal pour les produits et le formulaire de filtre */
     .product-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        margin-top: 20px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* 3 colonnes égales */
+        gap: 20px; /* Espacement entre les éléments (produits + filtre) */
+        margin: 20px; /* Marge autour de la grille pour éviter qu'elle touche les bords de l'écran */
     }
 
-    /* Style de chaque produit */
+    /* Style des éléments dans la liste de produits */
     .product-item {
-        flex: 1 1 250px;
         border: 1px solid #ddd;
         padding: 15px;
         background-color: #f9f9f9;
         text-align: center;
+        width: 100%; /* S'assure que les produits occupent bien toute la largeur disponible */
+        box-sizing: border-box; /* Assure que le padding ne modifie pas la largeur */
+    }
+
+    /* Spécifier la taille du formulaire de filtre pour qu'il occupe une "colonne" comme un produit */
+    .filter-item {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 15px;
+        width: 100%; /* S'assure que la barre de recherche prend la place d'un produit */
+        background-color: transparent; /* Enlever le fond */
+        border: none; /* Enlever le bord autour du conteneur */
     }
 
     .product-item h3 {
@@ -103,7 +82,7 @@
 
     /* Style de l'image du produit */
     .product-image {
-        max-width: 200px;
+        max-width: 180px;
         height: auto;
         margin-bottom: 10px;
     }
@@ -132,5 +111,36 @@
     .add-button:hover {
         background-color: #45a049;
     }
+
+    /* Style du formulaire de filtre */
+    .filter-form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .filter-form label {
+        margin-right: 10px;
+    }
+
+    .filter-form input {
+        margin-bottom: 10px;
+        padding: 5px;
+        width: 80%; /* Réduire la largeur des inputs */
+    }
+
+    .filter-form button {
+        padding: 5px 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        width: 80%; /* Aligner le bouton avec la largeur des inputs */
+    }
+
+    .filter-form button:hover {
+        background-color: #45a049;
+    }
 </style>
+
 {% endblock %}

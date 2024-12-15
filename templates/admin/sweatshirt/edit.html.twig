@@ -1,32 +1,61 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier un Sweatshirt{% endblock %}
+{% block title %}Back-Office - Modifier un Sweatshirt{% endblock %}
 
 {% block body %}
-    <h1>Modifier un Sweatshirt</h1>
+<div class="container">
+    {# En-tête principal #}
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Back-Office - Modifier un Sweatshirt</h1>
+        <a href="{{ path('admin_sweatshirt_list') }}" class="btn btn-secondary">Retour à la liste</a>
+    </header>
 
-   <form method="POST" enctype="multipart/form-data">
-    <label for="name">Nom :</label>
-    <input type="text" id="name" name="name" value="{{ sweatshirt.name }}" required>
+    {# Formulaire de modification de produit #}
+    <div class="card bg-light p-3 mb-4">
+        <h2 class="h4 mb-3">Modifier le Sweatshirt "{{ product.name }}"</h2>
+        <form method="POST" enctype="multipart/form-data" action="{{ path('admin_sweatshirt_edit', {'id': product.id}) }}">
+            <div class="row align-items-end">
+                {# Image du produit #}
+                <div class="col-md-2">
+                    <input type="file" name="image" class="form-control">
+                    {% if product.imagePath %}
+                        <small>Image actuelle: <img src="{{ asset(product.imagePath) }}" alt="{{ product.name }}" class="img-thumbnail" style="height: 80px; width: auto;"></small>
+                    {% endif %}
+                </div>
+                
+                {# Nom du produit #}
+                <div class="col-md-2">
+                    <input type="text" name="name" class="form-control" value="{{ product.name }}" placeholder="Nom" required>
+                </div>
 
-    <label for="price">Prix :</label>
-    <input type="number" id="price" name="price" value="{{ sweatshirt.price }}" step="0.01" required>
+                {# Prix du produit #}
+                <div class="col-md-2">
+                    <input type="number" step="0.01" name="price" class="form-control" value="{{ product.price }}" placeholder="Prix" required>
+                </div>
 
-    <label for="sizes">Tailles :</label>
-    <input type="text" id="sizes" name="sizes[]" value="{{ sweatshirt.sizes|keys|join(', ') }}" required>
+                {# Stock par taille (pré-rempli avec les valeurs existantes) #}
+                <div class="col-md-1">
+                    <input type="number" name="stock_xs" class="form-control" value="{{ product.sizes.XS }}" placeholder="XS" min="0" required>
+                </div>
+                <div class="col-md-1">
+                    <input type="number" name="stock_s" class="form-control" value="{{ product.sizes.S }}" placeholder="S" min="0" required>
+                </div>
+                <div class="col-md-1">
+                    <input type="number" name="stock_m" class="form-control" value="{{ product.sizes.M }}" placeholder="M" min="0" required>
+                </div>
+                <div class="col-md-1">
+                    <input type="number" name="stock_l" class="form-control" value="{{ product.sizes.L }}" placeholder="L" min="0" required>
+                </div>
+                <div class="col-md-1">
+                    <input type="number" name="stock_xl" class="form-control" value="{{ product.sizes.XL }}" placeholder="XL" min="0" required>
+                </div>
 
-    <label for="quantities">Quantités :</label>
-    <input type="text" id="quantities" name="quantities[]" value="{{ sweatshirt.sizes|map(s => s)|join(', ') }}" required>
-
-
-    <label for="featured">En vedette :</label>
-    <input type="checkbox" id="featured" name="featured" {% if sweatshirt.featured %}checked{% endif %}>
-
-    <label for="image">Image :</label>
-    <input type="file" id="image" name="image" accept=".jpg,.jpeg">
-
-    <button type="submit">Modifier</button>
-</form>
-
-
+                {# Bouton de modification #}
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-success">Modifier</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
