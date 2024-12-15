@@ -88,7 +88,7 @@ class Sweatshirt
         return $this->imagePath;
     }
 
-    public function setImagePath(?string $imagePath): static
+    public function setImagePath(?string $imagePath): self
     {
         $this->imagePath = $imagePath;
 

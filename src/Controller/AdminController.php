@@ -3,13 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\User;
-
 use App\Entity\Sweatshirt;
-
-use App\Form\SweatshirtType;
+use App\Repository\SweatshirtRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -42,223 +39,135 @@ class AdminController extends AbstractController
         ]);
     }
 
-    // Route pour afficher le dashboard de l'admin
-    #[Route('/admin', name: 'admin_dashboard')]
-    public function dashboard(): Response
-    {
-        return $this->render('admin/dashboard.html.twig');
-    }
-
     // Route pour afficher la liste des sweatshirts
-    #[Route('/admin/sweatshirts', name: 'admin_sweatshirt_list')]
+    #[Route('/admin/sweatshirt', name: 'admin_sweatshirt_list')]
     public function list(EntityManagerInterface $entityManager): Response
     {
         $sweatshirts = $entityManager->getRepository(Sweatshirt::class)->findAll();
 
-        return $this->render('product/list.html.twig', [
+        return $this->render('admin/sweatshirt/index.html.twig', [
             'products' => $sweatshirts,
         ]);
     }
-    
-    // Route pour créer un nouveau sweatshirt
-    #[Route('/admin/sweatshirt/new', name: 'admin_sweatshirt_create', methods: ['POST', 'GET'])]
-    public function create(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $sweatshirt = new Sweatshirt();
 
+    // Route pour la création d'un sweatshirt
+    #[Route('/admin/sweatshirt/create', name: 'admin_sweatshirt_create', methods: ['POST', 'GET'])]
+    public function create(Request $request, EntityManagerInterface $entityManager, SweatshirtRepository $sweatshirtRepository): Response
+    {
         if ($request->isMethod('POST')) {
-            // Récupérer les données envoyées via POST
             $name = $request->request->get('name');
             $price = (float) $request->request->get('price');
-            $sizes = $request->request->get('sizes[]'); // Tableau des tailles
-            $quantities = $request->request->get('quantities[]'); // Tableau des quantités
+            $featured = $request->request->get('featured') === 'on';
 
-           
+            // Récupération des tailles et des stocks (comme un tableau associatif)
+            $sizes = [
+                'XS' => (int) $request->request->get('stock_xs', 0),
+                'S' => (int) $request->request->get('stock_s', 0),
+                'M' => (int) $request->request->get('stock_m', 0),
+                'L' => (int) $request->request->get('stock_l', 0),
+                'XL' => (int) $request->request->get('stock_xl', 0),
+            ];
 
-            if (is_array($sizes) && is_array($quantities)) {
-                // Assurez-vous que les tailles et quantités sont valides
-                foreach ($sizes as $size) {
-                    if (!in_array($size, ['XS', 'S', 'M', 'L', 'XL'])) {
-                        throw new \Exception("Taille invalide: " . $size);
-                    }
-                }
-        
-                foreach ($quantities as $quantity) {
-                    if (!is_numeric($quantity) || $quantity < 0) {
-                        throw new \Exception("Quantité invalide: " . $quantity);
-                    }
-                }
+            // Création du produit
+            $sweatshirt = new Sweatshirt();
+            $sweatshirt->setName($name);
+            $sweatshirt->setPrice($price);
+            $sweatshirt->setFeatured($featured);
+            $sweatshirt->setSizes($sizes);  // Affectation du tableau des tailles
 
-                // Vérifier que les tailles et quantités sont bien des tableaux
-                if (!is_array($sizes) || !is_array($quantities)) {
-                    $this->addFlash('error', 'Les tailles et quantités doivent être des tableaux valides.');
-                    return $this->redirectToRoute('admin_sweatshirt_create');
-                }
-
-                // Vérifier que les tailles et quantités sont bien dans le même nombre
-                if (count($sizes) !== count($quantities)) {
-                    $this->addFlash('error', 'Le nombre de tailles doit correspondre au nombre de quantités.');
-                    return $this->redirectToRoute('admin_sweatshirt_create');
-                }
-
-                // Créer un tableau associatif pour les tailles et quantités
-               // Créer un tableau associatif pour les tailles et quantités
-$sizesQuantities = [];
-for ($i = 0; $i < count($sizes); $i++) {
-    $size = $sizes[$i];
-    $quantity = (int) $quantities[$i]; // Assurez-vous que la quantité est un entier
-
-    // Ajouter directement la taille et sa quantité dans le tableau
-    $sizesQuantities[$size] = $quantity;
-}
-
-
-
-                // Assigner le tableau des tailles et quantités
-                $sweatshirt->setSizes($sizesQuantities);
-
-                // Validation et déplacement de l'image téléchargée
-                $uploadedFile = $request->files->get('image');
-                if ($uploadedFile) {
-                    if ($uploadedFile->guessExtension() === 'jpg' || $uploadedFile->guessExtension() === 'jpeg') {
-                        $newFilename = uniqid() . '.jpg';
-                        $uploadedFile->move(
-                            $this->getParameter('kernel.project_dir') . '/public/uploads/images',
-                            $newFilename
-                        );
-                        $sweatshirt->setImagePath('/uploads/images/' . $newFilename);
-                    } else {
-                        $this->addFlash('error', 'Le fichier doit être au format .jpg.');
-                        return $this->redirectToRoute('admin_sweatshirt_create');
-                    }
-                }
-
-                // Créer l'objet Sweatshirt
-                $sweatshirt->setName($name);
-                $sweatshirt->setPrice($price);
-
-                // Persister l'entité dans la base de données
-                $entityManager->persist($sweatshirt);
-                $entityManager->flush();
-
-                $this->addFlash('success', 'Produit créé avec succès !');
-
-                return $this->redirectToRoute('admin_sweatshirt_list');
-            }
-        }
-
-        return $this->render('admin/sweatshirt/new.html.twig');
-    }
-
-    #[Route('/admin/sweatshirt/{id}/edit', name: 'admin_sweatshirt_edit', methods: ['POST', 'GET'])]
-public function edit(Request $request, Sweatshirt $sweatshirt, EntityManagerInterface $entityManager): Response
-{
-    if ($request->isMethod('POST')) {
-        // Récupérer les données envoyées via POST
-        $name = $request->request->get('name');
-        $price = (float) $request->request->get('price');
-        $featured = $request->request->get('featured') === 'on'; // Checkbox pour featured
-        $sizes = $request->request->get('sizes[]'); // Tableau des tailles
-        $quantities = $request->request->get('quantities[]'); // Tableau des quantités
-
-        if (is_array($sizes) && is_array($quantities)) {
-            // Valider les tailles
-            foreach ($sizes as $size) {
-                if (!in_array($size, ['XS', 'S', 'M', 'L', 'XL'])) {
-                    throw new \Exception("Taille invalide: " . $size);
-                }
-            }
-
-            // Valider les quantités
-            foreach ($quantities as $quantity) {
-                if (!is_numeric($quantity) || $quantity < 0) {
-                    throw new \Exception("Quantité invalide: " . $quantity);
-                }
-            }
-
-            // Vérifier la cohérence entre tailles et quantités
-            if (count($sizes) !== count($quantities)) {
-                $this->addFlash('error', 'Le nombre de tailles doit correspondre au nombre de quantités.');
-                return $this->redirectToRoute('admin_sweatshirt_edit', ['id' => $sweatshirt->getId()]);
-            }
-
-            // Créer un tableau associatif pour les tailles et quantités
-            $sizesQuantities = [];
-            for ($i = 0; $i < count($sizes); $i++) {
-                $sizesQuantities[$sizes[$i]] = (int) $quantities[$i];
-            }
-
-            // Assigner le tableau des tailles et quantités
-            $sweatshirt->setSizes($sizesQuantities);
-
-            // Gestion de l'image téléchargée
+            // Gestion de l'image
             $uploadedFile = $request->files->get('image');
             if ($uploadedFile) {
-                // Supprimer l'ancienne image si elle existe
-                if ($sweatshirt->getImagePath()) {
-                    $oldImagePath = $this->getParameter('kernel.project_dir') . '/public' . $sweatshirt->getImagePath();
-                    if (file_exists($oldImagePath)) {
-                        unlink($oldImagePath);
-                    }
-                }
-
-                // Valider le fichier image
                 if ($uploadedFile->guessExtension() === 'jpg' || $uploadedFile->guessExtension() === 'jpeg') {
                     $newFilename = uniqid() . '.jpg';
                     $uploadedFile->move(
                         $this->getParameter('kernel.project_dir') . '/public/uploads/images',
                         $newFilename
                     );
-
                     $sweatshirt->setImagePath('/uploads/images/' . $newFilename);
-                } else {
-                    $this->addFlash('error', 'Le fichier doit être au format .jpg.');
-                    return $this->redirectToRoute('admin_sweatshirt_edit', ['id' => $sweatshirt->getId()]);
                 }
             }
 
-            // Mettre à jour les autres propriétés
+            // Sauvegarde en base de données
+            $entityManager->persist($sweatshirt);
+            $entityManager->flush();
+
+            // Message de succès
+            $this->addFlash('success', 'Produit créé avec succès !');
+            return $this->redirectToRoute('admin_sweatshirt_list');
+        }
+        
+        // Récupération des produits mis en avant (max 3)
+        $featuredSweatshirts = $sweatshirtRepository->findBy(
+            ['featured' => true],
+            null,
+            3
+        );
+
+        return $this->render('admin/sweatshirt/backoffice.html.twig', [
+            'featuredSweatshirts' => $featuredSweatshirts,  // Passer les produits mis en avant
+        ]);
+    }
+
+
+    // Route pour la modification d'un sweatshirt
+    #[Route('/admin/sweatshirt/{id}/edit', name: 'admin_sweatshirt_edit', methods: ['POST', 'GET'])]
+    public function edit(Request $request, Sweatshirt $sweatshirt, EntityManagerInterface $entityManager): Response
+    {
+        if ($request->isMethod('POST')) {
+            $name = $request->request->get('name');
+            $price = (float) $request->request->get('price');
+            $featured = $request->request->get('featured') === 'on';
+
+            // Récupération des tailles et des stocks (comme un tableau associatif)
+            $sizes = [
+                'XS' => (int) $request->request->get('stock_xs', 0),
+                'S' => (int) $request->request->get('stock_s', 0),
+                'M' => (int) $request->request->get('stock_m', 0),
+                'L' => (int) $request->request->get('stock_l', 0),
+                'XL' => (int) $request->request->get('stock_xl', 0),
+            ];
+
+            // Affectation des nouvelles données
             $sweatshirt->setName($name);
             $sweatshirt->setPrice($price);
             $sweatshirt->setFeatured($featured);
+            $sweatshirt->setSizes($sizes); // Mise à jour du tableau des tailles
 
-            // Enregistrer les modifications
+            // Gestion de l'image
+            $uploadedFile = $request->files->get('image');
+            if ($uploadedFile) {
+                if ($uploadedFile->guessExtension() === 'jpg' || $uploadedFile->guessExtension() === 'jpeg') {
+                    $newFilename = uniqid() . '.jpg';
+                    $uploadedFile->move(
+                        $this->getParameter('kernel.project_dir') . '/public/uploads/images',
+                        $newFilename
+                    );
+                    $sweatshirt->setImagePath('/uploads/images/' . $newFilename);
+                }
+            }
+
+            // Sauvegarde des modifications
             $entityManager->flush();
-
-            $this->addFlash('success', 'Sweatshirt modifié avec succès !');
+            $this->addFlash('success', 'Produit mis à jour avec succès !');
             return $this->redirectToRoute('admin_sweatshirt_list');
         }
+
+        return $this->render('admin/sweatshirt/edit.html.twig', [
+            'product' => $sweatshirt,
+        ]);
     }
 
-    return $this->render('admin/sweatshirt/edit.html.twig', [
-        'sweatshirt' => $sweatshirt,
-    ]);
-}
-
-    // Route pour la suppression avec confirmation
-#[Route('/admin/sweatshirt/{id}/delete', name: 'admin_sweatshirt_delete', methods: ['GET', 'POST'])]
-public function delete(Sweatshirt $sweatshirt, EntityManagerInterface $entityManager, Request $request): Response
-{
-    // Si la requête est en méthode POST, procéder à la suppression
-    if ($request->isMethod('POST')) {
-        // Supprimer l'image si elle existe
-        $imagePath = $this->getParameter('kernel.project_dir') . '/public' . $sweatshirt->getImagePath();
-        if (file_exists($imagePath)) {
-            unlink($imagePath);
-        }
-
-        // Supprimer l'entité de la base de données
+    // Route pour la suppression d'un sweatshirt
+    #[Route('/admin/sweatshirt/{id}/delete', name: 'admin_sweatshirt_delete', methods: ['POST'])]
+    public function delete(Sweatshirt $sweatshirt, EntityManagerInterface $entityManager): Response
+    {
+ 
+        // Suppression du produit
         $entityManager->remove($sweatshirt);
         $entityManager->flush();
+        $this->addFlash('success', 'Produit supprimé avec succès !');
 
-        $this->addFlash('success', 'Sweatshirt supprimé avec succès !');
         return $this->redirectToRoute('admin_sweatshirt_list');
     }
-
-    // Si la méthode est GET, afficher la confirmation de suppression
-    return $this->render('admin/sweatshirt/delete.html.twig', [
-        'sweatshirt' => $sweatshirt,
-    ]);
-}
-
 }

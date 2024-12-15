@@ -11,6 +11,46 @@
                 text-decoration: underline;
                 color: #007bff;
             }
+            /* Style du header */
+            header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 20px;
+                background-color: #f8f9fa;
+                border-bottom: 2px solid #ddd;
+            }
+
+            header .logo {
+                display: flex;
+                align-items: center;
+            }
+
+            header .logo img {
+                height: 40px; /* Taille du logo */
+                margin-right: 10px;
+            }
+
+            header nav ul {
+                display: flex;
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            header nav ul li {
+                margin-left: 20px;
+            }
+
+            header nav ul li a {
+                text-decoration: none;
+                color: #333;
+                font-weight: bold;
+            }
+
+            header nav ul li a:hover {
+                color: #007bff;
+            }
         </style>
         {% block stylesheets %}
         {% endblock %}
@@ -19,24 +59,47 @@
         {% endblock %}
     </head>
     <body>
-  <nav>
-    <ul>
-        <li><a href="{{ path('home') }}" class="{% if app.request.pathinfo == path('home') %}active{% endif %}">Accueil</a></li>
+        <header>
+            <!-- Logo à gauche -->
+            <div class="logo">
+                <img src="{{ asset('uploads/images/Logo.png') }}" alt="Logo">
+            </div>
 
-        {% if not app.user %}
-            <li><a href="{{ path('register') }}" class="{% if app.request.pathinfo == path('register') %}active{% endif %}">S'inscrire</a></li>
-            <li><a href="{{ path('login') }}" class="{% if app.request.pathinfo == path('login') %}active{% endif %}">Se connecter</a></li>
-        {% else %}
-            <li><a href="{{ path('products') }}" class="{% if app.request.pathinfo == path('products') %}active{% endif %}">Boutique</a></li>
-            <li><a href="{{ path('cart') }}" class="{% if app.request.pathinfo == path('cart') %}active{% endif %}">Panier</a></li>
-            <li><a href="{{ path('app_logout') }}">Se déconnecter</a></li>
-        {% endif %}
-    </ul>
-</nav>
-    
+            <!-- Liens de navigation alignés à droite -->
+            <nav>
+                <ul>
+                    
+                    {% if not app.user %}
+                        <li><a href="{{ path('register') }}" class="{% if app.request.pathinfo == path('register') %}active{% endif %}">S'inscrire</a></li>
+                        <li><a href="{{ path('login') }}" class="{% if app.request.pathinfo == path('login') %}active{% endif %}">Se connecter</a></li>
+                    {% else %}
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <!-- Lien Back-Office pour l'admin -->
+                            <li><a href="{{ path('admin_sweatshirt_create') }}" class="{% if app.request.pathinfo == path('admin_sweatshirt_create') %}active{% endif %}">Back-Office</a></li>
+                            <li><a href="{{ path('admin_sweatshirt_list') }}" class="{% if app.request.pathinfo == path('admin_sweatshirt_list') %}active{% endif %}">Boutique (Admin)</a></li>
+                        {% else %}
+                            <!-- Liens réservés aux utilisateurs normaux uniquement -->
+                            <li><a href="{{ path('home') }}" class="{% if app.request.pathinfo == path('home') %}active{% endif %}">Accueil</a></li>
+                            <li><a href="{{ path('products') }}" class="{% if app.request.pathinfo == path('products') %}active{% endif %}">Boutique</a></li>
+                            <li><a href="{{ path('cart') }}" class="{% if app.request.pathinfo == path('cart') %}active{% endif %}">Panier</a></li>
+                        {% endif %}
+                        <li><a href="{{ path('app_logout') }}">Se déconnecter</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </header>
 
-    <div class="content">
-        {% block body %}{% endblock %}
-    </div>
-</body>
-</html> 
+        <div class="content">
+            {% block body %}{% endblock %}
+        </div>
+
+        <footer>
+            <section>
+                <h1>Bienvenue chez </h1>
+                <p></p>
+                <p>Adresse : Piccadilly Circus, London W1J 0DA, Royaume-Uni</p>
+                <p>Email : stubborn@blabla.com</p>
+            </section>
+        </footer>
+    </body>
+</html>
