@@ -3,43 +3,48 @@
 {% block title %}Inscription{% endblock %}
 
 {% block body %}
-    <h1>Créer un compte</h1>
+<div style="display: flex; justify-content: center; align-items: center; height: 70vh;">
+    <div style="border: 1px solid #ccc; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 5px; width: 300px;">
+        <h2 style="font-size: 18px; margin-bottom: 15px;">Créer un compte</h2>
 
-    <!-- Début du formulaire d'inscription -->
-    {{ form_start(registrationForm) }}
-    
-        <div>
-            {{ form_label(registrationForm.name, 'Nom') }}
-            {{ form_widget(registrationForm.name, { 'attr': {'placeholder': 'Votre nom complet'} }) }}
-            {{ form_errors(registrationForm.name) }}
+        {{ form_start(registrationForm) }}
+        
+            <div style="margin-bottom: 10px;">
+                {{ form_label(registrationForm.name, 'Nom utilisateur :', {'label_attr': {'style': 'display: block; font-size: 14px;'}}) }}
+                {{ form_widget(registrationForm.name, {'attr': {'style': 'width: 100%; padding: 5px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;'}}) }}
+                {{ form_errors(registrationForm.name) }}
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                {{ form_label(registrationForm.email, 'Adresse mail :', {'label_attr': {'style': 'display: block; font-size: 14px;'}}) }}
+                {{ form_widget(registrationForm.email, {'attr': {'style': 'width: 100%; padding: 5px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;'}}) }}
+                {{ form_errors(registrationForm.email) }}
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                {{ form_label(registrationForm.plainPassword, 'Mot de passe :', {'label_attr': {'style': 'display: block; font-size: 14px;'}}) }}
+                {{ form_widget(registrationForm.plainPassword, {'attr': {'style': 'width: 100%; padding: 5px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;'}}) }}
+                {{ form_errors(registrationForm.plainPassword) }}
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                {{ form_label(registrationForm.deliveryAddress, 'Adresse de livraison :', {'label_attr': {'style': 'display: block; font-size: 14px;'}}) }}
+                {{ form_widget(registrationForm.deliveryAddress, {'attr': {'style': 'width: 100%; padding: 5px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;'}}) }}
+                {{ form_errors(registrationForm.deliveryAddress) }}
+            </div>
+
+            <button type="submit" style="width: 100%; background-color: #007bff; color: white; border: none; padding: 8px; font-size: 14px; border-radius: 4px; cursor: pointer;">
+                Créer un compte
+            </button>
+        
+        {{ form_end(registrationForm) }}
+        
+        <div style="margin-top: 15px; text-align: center; font-size: 14px;">
+            <p>Déjà inscrit ?</p>
+            <a href="{{ path('app_login') }}" style="display: inline-block; background-color: #339af0; color: white; padding: 6px 10px; text-decoration: none; font-size: 14px; border-radius: 4px;">
+                Se connecter
+            </a>
         </div>
-
-        <div>
-            {{ form_label(registrationForm.email, 'Adresse email') }}
-            {{ form_widget(registrationForm.email, { 'attr': {'placeholder': 'Votre adresse email'} }) }}
-            {{ form_errors(registrationForm.email) }}
-        </div>
-
-        <div>
-            {{ form_label(registrationForm.plainPassword, 'Mot de passe') }}
-            {{ form_widget(registrationForm.plainPassword, { 'attr': {'placeholder': 'Votre mot de passe'} }) }}
-            {{ form_errors(registrationForm.plainPassword) }}
-        </div>
-
-        <div>
-            {{ form_label(registrationForm.deliveryAddress, 'Adresse de livraison') }}
-            {{ form_widget(registrationForm.deliveryAddress, { 'attr': {'placeholder': 'Adresse complète (optionnelle)'} }) }}
-            {{ form_errors(registrationForm.deliveryAddress) }}
-        </div>
-
-        <button type="submit">S'inscrire</button>
-    
-    {{ form_end(registrationForm) }}
-    <!-- Fin du formulaire -->
-
-    <!-- Lien pour les utilisateurs déjà inscrits -->
-    <p>
-        Déjà inscrit ? <a href="{{ path('app_login') }}">Connectez-vous ici</a>.
-    </p>
+    </div>
+</div>
 {% endblock %}
-

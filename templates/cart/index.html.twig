@@ -1,39 +1,194 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+<style>
+    /* Conteneur principal */
+    .cart-container {
+        width: 100%;
+        max-width: 1400px; /* Conteneur large */
+        margin: 50px auto;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    /* Produit individuel */
+    .cart-item {
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        border: 1px solid #ccc;
+        margin-bottom: 30px;
+        border-radius: 5px;
+        background-color: #fff;
+        gap: 20px;
+    }
+
+    /* Colonne image */
+    .cart-item-image {
+        flex-shrink: 0;
+    }
+
+    .cart-item-image img {
+        width: 150px; /* Taille plus grande */
+        height: 150px;
+        object-fit: cover;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    /* Colonne informations */
+    .cart-item-info {
+        display: flex;
+        justify-content: space-between; /* Aligner les informations sur la même ligne */
+        flex: 2;
+        gap: 20px;
+        font-size: 1.2rem;
+    }
+
+    .cart-item-info p {
+        margin: 5px 0;
+        color: #333;
+        font-weight: 500;
+    }
+
+    /* Colonne actions */
+    .cart-item-actions {
+        display: flex;
+        justify-content: flex-start; /* S'assurer que le bouton est aligné à gauche */
+        flex-direction: column;
+        margin-top: 10px;
+    }
+
+    .cart-item-actions button {
+        padding: 12px 20px;
+        font-size: 1rem;
+        background-color: #e74c3c;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .cart-item-actions button:hover {
+        background-color: #c0392b;
+    }
+
+    /* Résumé du panier */
+    .cart-summary {
+        display: flex;
+        justify-content: space-between; /* Aligner Total et Finaliser ma commande sur la même ligne */
+        align-items: center; /* Alignement vertical */
+        margin-top: 30px;
+    }
+
+    .cart-summary .total {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    /* Boutons dans la section résumé */
+    .cart-summary .checkout-button,
+    .cart-summary .continue-shopping-button {
+        padding: 12px 20px;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    /* Bouton Finaliser ma commande */
+    .checkout-button {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .checkout-button:hover {
+        background-color: #45a049;
+    }
+
+    /* Bouton Continuer mes achats avec un fond plus moderne */
+    .continue-shopping-button {
+        background-color: #3498db; /* Nouveau fond plus agréable */
+        color: white;
+        margin-top: 10px;
+    }
+
+    .continue-shopping-button:hover {
+        background-color: #2980b9; /* Effet au survol pour un fond plus foncé */
+    }
+
+    /* Style spécifique pour le formulaire */
+    .checkout-form {
+        display: flex;
+        justify-content: flex-end; /* Aligner à droite */
+        margin-top: 20px;
+    }
+
+    .checkout-form button {
+        padding: 12px 20px;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        background-color: #4CAF50;
+        color: white;
+        transition: background-color 0.3s ease;
+    }
+
+    .checkout-form button:hover {
+        background-color: #45a049;
+    }
+</style>
+
+<div class="cart-container">
     <h1>Votre panier</h1>
 
     {% if cart is empty %}
         <p>Votre panier est vide.</p>
     {% else %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Produit</th>
-                    <th>Prix</th>
-                    <th>Taille</th>
-                    <th>Quantité</th>
-                    <th>Total</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in cart %}
-                    <tr>
-                        <td>{{ item.name }}</td>
-                        <td>{{ item.price }} €</td>
-                        <td>{{ item.size }}</td>
-                        <td>{{ item.quantity }}</td>
-                        <td>{{ item.price * item.quantity }} €</td>
-                        <td>
-                            <a href="{{ path('app_cart_remove', {id: item.id, size: item.size}) }}">Retirer</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <!-- Liste des produits -->
+        {% for item in cart %}
+            <div class="cart-item">
+                <!-- Colonne image -->
+                <div class="cart-item-image">
+                    <img src="{{ item.imagePath }}" alt="{{ item.name }}">
+                </div>
 
-        <h3>Total : {{ total }} €</h3>
-        <a href="{{ path('app_cart_checkout') }}">Valider ma commande</a>
+                <!-- Colonne informations -->
+                <div class="cart-item-info">
+                    <p><strong>Nom :</strong> {{ item.name }}</p>
+                    <p><strong>Prix :</strong> {{ item.price }} €</p>
+                    <p><strong>Taille :</strong> {{ item.size }}</p>
+                </div>
+
+                <!-- Colonne actions : bouton sous les informations -->
+                <div class="cart-item-actions">
+                    <a href="{{ path('app_cart_remove', {id: item.id, size: item.size}) }}">
+                        <button>Retirer du panier</button>
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+
+        <!-- Résumé du panier -->
+        <div class="cart-summary">
+            <div class="total">Total : {{ total | number_format(2, '.', ',') }} €</div>
+        </div>
+
+        <!-- Formulaire pour passer à la page de paiement -->
+        <form action="{{ path('create_checkout_session') }}" method="POST" class="checkout-form">
+            <button type="submit" class="checkout-button">Finaliser ma commande</button>
+        </form>
+
+        <!-- Bouton Continuer mes achats -->
+        <a href="{{ path('app_products') }}">
+            <button class="continue-shopping-button">Continuer mes achats</button>
+        </a>
     {% endif %}
+</div>
+
 {% endblock %}

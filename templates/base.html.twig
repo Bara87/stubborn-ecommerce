@@ -31,6 +31,12 @@
                 margin-right: 10px;
             }
 
+            header .logo .slogan {
+                font-size: 1.2rem;
+                color: #555;
+                font-style: italic;
+            }
+
             header nav ul {
                 display: flex;
                 list-style-type: none;
@@ -51,34 +57,41 @@
             header nav ul li a:hover {
                 color: #007bff;
             }
-        </style>
-        {% block stylesheets %}
-        {% endblock %}
 
-        {% block javascripts %}
-        {% endblock %}
+            /* Style du footer */
+            footer {
+                background-color: #f8f9fa;
+                border-top: 2px solid #ddd;
+                padding: 20px;
+                text-align: center;
+            }
+
+            footer section {
+                margin-bottom: 10px;
+            }
+        </style>
+        {% block stylesheets %}{% endblock %}
+        {% block javascripts %}{% endblock %}
     </head>
     <body>
         <header>
             <!-- Logo à gauche -->
             <div class="logo">
                 <img src="{{ asset('uploads/images/Logo.png') }}" alt="Logo">
+                <span class="slogan">"Don't compromise on your look"</span>
             </div>
 
             <!-- Liens de navigation alignés à droite -->
             <nav>
                 <ul>
-                    
                     {% if not app.user %}
                         <li><a href="{{ path('register') }}" class="{% if app.request.pathinfo == path('register') %}active{% endif %}">S'inscrire</a></li>
                         <li><a href="{{ path('login') }}" class="{% if app.request.pathinfo == path('login') %}active{% endif %}">Se connecter</a></li>
                     {% else %}
                         {% if is_granted('ROLE_ADMIN') %}
-                            <!-- Lien Back-Office pour l'admin -->
                             <li><a href="{{ path('admin_sweatshirt_create') }}" class="{% if app.request.pathinfo == path('admin_sweatshirt_create') %}active{% endif %}">Back-Office</a></li>
                             <li><a href="{{ path('admin_sweatshirt_list') }}" class="{% if app.request.pathinfo == path('admin_sweatshirt_list') %}active{% endif %}">Boutique (Admin)</a></li>
                         {% else %}
-                            <!-- Liens réservés aux utilisateurs normaux uniquement -->
                             <li><a href="{{ path('home') }}" class="{% if app.request.pathinfo == path('home') %}active{% endif %}">Accueil</a></li>
                             <li><a href="{{ path('products') }}" class="{% if app.request.pathinfo == path('products') %}active{% endif %}">Boutique</a></li>
                             <li><a href="{{ path('cart') }}" class="{% if app.request.pathinfo == path('cart') %}active{% endif %}">Panier</a></li>
@@ -95,10 +108,23 @@
 
         <footer>
             <section>
-                <h1>Bienvenue chez </h1>
-                <p></p>
-                <p>Adresse : Piccadilly Circus, London W1J 0DA, Royaume-Uni</p>
+                <h3>Adresse</h3>
+                <p>Piccadilly Circus, London W1J 0DA, Royaume-Uni</p>
                 <p>Email : stubborn@blabla.com</p>
+            </section>
+            <section>
+                <h3>Liens utiles</h3>
+                <a href="{{ path('home') }}">Accueil</a> | 
+                <a href="{{ path('products') }}">Boutique</a> | 
+                <a href="{{ path('cart') }}">Panier</a> | 
+                
+            </section>
+            <section>
+                <h3>Suivez-nous</h3>
+                <a href="#">Facebook</a> | 
+                <a href="#">Twitter</a> | 
+                <a href="#">Instagram</a> | 
+                <a href="#">LinkedIn</a>
             </section>
         </footer>
     </body>
