@@ -3,38 +3,129 @@
 {% block title %}Log in!{% endblock %}
 
 {% block body %}
-<form method="post">
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+<div class="login-container">
+    <div class="login-box">
+        <h2>Se connecter</h2>
 
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+        {% if error %}
+            <div class="error-message">
+                {{ error.messageKey|trans(error.messageData, 'security') }}
+            </div>
+        {% endif %}
+
+        <form method="post">
+            <div class="form-group">
+                <label for="inputEmail">Nom utilisateur :</label>
+                <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="inputPassword">Mot de passe :</label>
+                <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+            </div>
+
+             <input type="hidden" name="_csrf_token"
+                 value="{{ csrf_token('authenticate') }}"
+             >
+
+            <button type="submit" class="btn-submit">
+                Se Connecter
+            </button>
+
+            <div class="forgot-password">
+                <a href="#">Mot de passe oublié</a>
+            </div>
+        </form>
+
+        <div class="register-link">
+            <p>Pas encore inscrit ?</p>
+            <a href="{{ path('app_register') }}" class="btn-register">Créer un compte</a>
         </div>
-    {% endif %}
-
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-    <label for="inputEmail">Email</label>
-    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-    <label for="inputPassword">Password</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
-
-    <input type="hidden" name="_csrf_token"
-           value="{{ csrf_token('authenticate') }}"
-    >
-
-    <div class="checkbox mb-3">
-        <label>
-            <input type="checkbox" name="_remember_me"> Remember me
-        </label>
     </div>
-
-    <button class="btn btn-lg btn-primary" type="submit">
-        Sign in
-    </button>
-</form>
-<div class="mt-3">
-    <p>Pas encore inscrit ? <a href="{{ path('app_register') }}">S'inscrire</a></p>
 </div>
+
+{% block stylesheets %}
+    <style>
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+        }
+
+        .login-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 5px;
+            width: 300px;
+        }
+
+        .login-box h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 5px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .forgot-password a {
+            color: #007bff;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        .register-link {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            display: inline-block;
+            background-color: #339af0;
+            color: white;
+            padding: 6px 10px;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+    </style>
+{% endblock %}
 {% endblock %}

@@ -4,12 +4,13 @@
 
 {% block body %}
 
-<h1>Liste des Produits</h1>
+<!-- Titre centré -->
+<h1 style="text-align: center;">Liste des Produits</h1>
 
 <!-- Liste des produits -->
 <div class="product-list">
-    <!-- Barre de recherche traitée comme un produit -->
-    <div class="product-item filter-item">
+    <!-- Barre de recherche sans cadrage -->
+    <div class="filter-item" style="border: none; box-shadow: none; background-color: transparent; padding: 0;">
         <form method="get" action="{{ path('app_products') }}" class="filter-form">
             <label for="minPrice">Prix minimum</label>
             <input type="number" name="minPrice" id="minPrice" step="0.01" value="{{ app.request.query.get('minPrice', '') }}">
@@ -23,110 +24,120 @@
 
     <!-- Produits -->
     {% for product in products %}
-        <div class="product-item">
-            <h3>{{ product.name }}</h3>
-            <p>Prix : {{ product.price }} €</p>
-            {% if product.imagePath %}
-                <a href="{{ path('app_product_detail', {'id': product.id}) }}">
-                    <img src="{{ product.imagePath }}" alt="{{ product.name }}" class="product-image">
-                </a>
-            {% else %}
-                <p>Aucune image disponible</p>
-            {% endif %}
-
-            
+        <div class="product-card">
+            <div class="product-image-container">
+                {% if product.imagePath %}
+                    <a href="{{ path('app_product_detail', {'id': product.id}) }}">
+                        <img src="{{ product.imagePath }}" alt="{{ product.name }}" class="product-image">
+                    </a>
+                {% else %}
+                    <div class="placeholder-image"></div>
+                {% endif %}
+            </div>
+            <div class="product-info">
+                <p class="product-name">Nom : {{ product.name }}</p>
+                <p class="product-price">Prix : {{ product.price }} €</p>
+            </div>
+            <a href="{{ path('app_product_detail', { id: product.id }) }}" class="btn">VOIR</a>
         </div>
     {% endfor %}
 </div>
 
+<!-- Styles CSS -->
 <style>
-    /* Conteneur principal pour les produits et le formulaire de filtre */
+    /* Conteneur principal des produits */
     .product-list {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr); /* 3 colonnes égales */
-        gap: 20px; /* Espacement entre les éléments (produits + filtre) */
-        margin: 20px; /* Marge autour de la grille pour éviter qu'elle touche les bords de l'écran */
-    }
-
-    /* Style des éléments dans la liste de produits */
-    .product-item {
-        border: 1px solid #ddd;
-        padding: 15px;
-        background-color: #f9f9f9;
-        text-align: center;
-        width: 100%; /* S'assure que les produits occupent bien toute la largeur disponible */
-        box-sizing: border-box; /* Assure que le padding ne modifie pas la largeur */
-    }
-
-    /* Spécifier la taille du formulaire de filtre pour qu'il occupe une "colonne" comme un produit */
-    .filter-item {
         display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        gap: 10px;
-        padding: 15px;
-        width: 100%; /* S'assure que la barre de recherche prend la place d'un produit */
-        background-color: transparent; /* Enlever le fond */
-        border: none; /* Enlever le bord autour du conteneur */
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px; /* Espacement entre les cartes */
+        margin: 20px;
+        margin-bottom: 130px;
     }
 
-    .product-item h3 {
-        font-size: 1.2em;
-        margin-bottom: 10px;
-    }
-
-    .product-item p {
-        font-size: 1em;
-        margin-bottom: 10px;
-    }
-
-    /* Style de l'image du produit */
-    .product-image {
-        max-width: 180px;
-        height: auto;
-        margin-bottom: 10px;
-    }
-
-    /* Actions supplémentaires pour l'admin */
-    .admin-actions a {
-        margin-right: 10px;
-        color: #007bff;
-        text-decoration: none;
-    }
-
-    .admin-actions a:hover {
-        text-decoration: underline;
-    }
-
-    .add-button {
-        display: inline-block;
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 20px;
-        text-decoration: none;
+    /* Carte produit */
+    .product-card {
+        border: 2px solid #ccc;
         border-radius: 5px;
-        margin-top: 20px;
+        width: 250px; /* Largeur fixe */
+        padding: 10px;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        background-color: #f9f9f9;
     }
 
-    .add-button:hover {
-        background-color: #45a049;
+    .product-image-container {
+        width: 100%;
+        height: 200px;
+        background-color: #e0e0e0; /* Fond gris si aucune image */
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    /* Style du formulaire de filtre */
+    .product-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .placeholder-image {
+        width: 100%;
+        height: 100%;
+        background-color: #ddd;
+    }
+
+    .product-info {
+        margin: 10px 0;
+    }
+
+    .product-name,
+    .product-price {
+        margin: 5px 0;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .btn {
+        display: inline-block;
+        text-decoration: none;
+        background-color: #333;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background-color: #555;
+    }
+
+    /* Barre de filtre */
+    .filter-item {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
     .filter-form {
         display: flex;
-        flex-direction: column;
+        justify-content: center;
         gap: 10px;
+        flex-wrap: wrap;
     }
 
     .filter-form label {
-        margin-right: 10px;
+        text-align: left;
+        font-size: 14px;
+        color: #333;
     }
 
     .filter-form input {
-        margin-bottom: 10px;
         padding: 5px;
-        width: 80%; /* Réduire la largeur des inputs */
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
     }
 
     .filter-form button {
@@ -134,8 +145,10 @@
         background-color: #4CAF50;
         color: white;
         border: none;
+        border-radius: 5px;
         cursor: pointer;
-        width: 80%; /* Aligner le bouton avec la largeur des inputs */
+        font-size: 14px;
+        font-weight: bold;
     }
 
     .filter-form button:hover {

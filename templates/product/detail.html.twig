@@ -1,34 +1,137 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-<h1>{{ product.name }}</h1>
+<style>
+    /* Conteneur principal étalé sur toute la largeur */
+    .product-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        width: 100%;
+        max-width: 1200px;
+        margin: 80px auto 180px; /* Ajout d'une marge en haut et en bas */
+        padding: 20px;
+        border: 1px solid #ddd;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #f9f9f9;
+    }
 
-{% if product.imagePath %}
-    <a href="{{ path('app_product_detail', { id: product.id }) }}">
-        <img src="{{ product.imagePath }}" alt="{{ product.name }}" style="max-width: 200px;">
-    </a>
-{% else %}
-    <p>Aucune image disponible</p>
-{% endif %}
+    /* Colonne image */
+    .product-image-column {
+        flex: 1; /* Prend la première colonne */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
-<p>Prix : {{ product.price }} €</p>
+    .product-image-column img {
+        max-width: 100%;
+        height: auto;
+        object-fit: contain;
+    }
 
-<form method="post" action="{{ path('app_cart_add', { id: product.id }) }}">
-    <label for="size">Taille</label>
-    <select name="size" id="size" onchange="updateMaxQuantity()">
-        <option value="XS">XS</option>
-        <option value="S">S</option>
-        <option value="M">M</option>
-        <option value="L">L</option>
-        <option value="XL">XL</option>
-    </select>
+    /* Colonne info produit */
+    .product-info-column {
+        flex: 1; /* Deuxième colonne */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 10px;
+    }
 
-    <label for="quantity">Quantité</label>
-    <input type="number" name="quantity" id="quantity" value="1" min="1" 
-           required>
+    .product-info-column h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        color: #333;
+    }
 
-    <button type="submit">Ajouter au panier</button>
-</form>
+    .product-info-column p {
+        margin: 0;
+        font-size: 1.2rem;
+        color: #555;
+    }
+
+    /* Colonne formulaire */
+    .product-form-column {
+        flex: 1; /* Troisième colonne */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .product-form-column label {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .product-form-column select,
+    .product-form-column input {
+        width: 100%;
+        padding: 5px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .product-form-column button {
+        align-self: flex-end; /* Aligner bouton à droite */
+        padding: 10px 15px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 20px; /* Ajout d'une marge en haut pour le bouton */
+    }
+
+    .product-form-column button:hover {
+        background-color: #45a049;
+    }
+</style>
+
+<!-- Conteneur principal -->
+<div class="product-container">
+    <!-- Première colonne : Image du produit -->
+    <div class="product-image-column">
+        {% if product.imagePath %}
+            <img src="{{ product.imagePath }}" alt="{{ product.name }}">
+        {% else %}
+            <p>Aucune image disponible</p>
+        {% endif %}
+    </div>
+
+    <!-- Deuxième colonne : Informations du produit -->
+    <div class="product-info-column">
+        <h1>{{ product.name }}</h1>
+        <p>Prix : {{ product.price }} €</p>
+    </div>
+
+    <!-- Troisième colonne : Formulaire -->
+    <div class="product-form-column">
+        <form method="post" action="{{ path('app_cart_add', { id: product.id }) }}">
+            <label for="size">Taille</label>
+            <select name="size" id="size" onchange="updateMaxQuantity()">
+                <option value="XS">XS</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+            </select>
+
+            <label for="quantity">Quantité</label>
+            <input type="number" name="quantity" id="quantity" value="1" min="1" required>
+
+            <!-- Bouton placé en bas -->
+            <button type="submit">Ajouter au panier</button>
+        </form>
+    </div>
+</div>
 
 <script>
     // Récupérer le stock des tailles du produit

@@ -4,7 +4,6 @@
 
 {% block body %}
     {% if is_granted('ROLE_ADMIN') %}
-        {# Redirection JavaScript si l'utilisateur est admin #}
         <script>
             window.location.href = "{{ path('admin_sweatshirt_create') }}";
         </script>
@@ -15,17 +14,128 @@
             <div class="featured-products">
                 {% for product in featuredSweatshirts %}
                     <div class="product-card">
-                        <h3>{{ product.name }}</h3>
-                        {% if product.imagePath %}
-                            <img src="{{ product.imagePath }}" alt="{{ product.name }}" class="product-image">
-                        {% else %}
-                            <p>Aucune image disponible</p>
-                        {% endif %}
-                        <p>Prix : {{ product.price }} €</p>
-                        <a href="{{ path('app_product_detail', { id: product.id }) }}" class="btn">Voir</a>
+                        <div class="product-image-container">
+                            {% if product.imagePath %}
+                                <img src="{{ product.imagePath }}" alt="{{ product.name }}" class="product-image">
+                            {% else %}
+                                <div class="placeholder-image"></div>
+                            {% endif %}
+                        </div>
+                        <div class="product-info">
+                            <p class="product-name">Nom : {{ product.name }}</p>
+                            <p class="product-price">Prix : {{ product.price }} €</p>
+                        </div>
+                        <a href="{{ path('app_product_detail', { id: product.id }) }}" class="btn">VOIR</a>
                     </div>
                 {% endfor %}
             </div>
         </section>
+
+        <!-- Paragraphe de présentation de la société -->
+        <section class="about-section">
+            <h2>À propos de Stubborn</h2>
+            <p>
+                Fondée avec passion, Stubborn est une marque dédiée à offrir des sweat-shirts de qualité, alliant confort, style et durabilité. 
+                Chaque pièce reflète notre engagement envers l'authenticité et la créativité. Que vous cherchiez une tenue décontractée ou un look moderne, 
+                nos collections sont conçues pour répondre à vos attentes tout en respectant l'environnement. Découvrez l'univers Stubborn et laissez-vous séduire par notre savoir-faire unique.
+            </p>
+        </section>
+
+        <!-- Styles CSS intégrés -->
+        <style>
+            /* Style général de la section des produits mis en avant */
+            .featured-section {
+                text-align: center;
+                padding: 20px;
+                margin-top: 10px;
+                margin-bottom: 50px; /* Réduit la marge pour ajuster avec la nouvelle section */
+            }
+
+            .featured-products {
+                display: flex;
+                justify-content: center;
+                gap: 20px; /* Espacement entre les cartes */
+                flex-wrap: wrap;
+            }
+
+            /* Carte produit */
+            .product-card {
+                border: 2px solid #ccc;
+                border-radius: 5px;
+                width: 250px; /* Largeur de chaque produit */
+                padding: 10px;
+                box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+                text-align: center;
+                background-color: #f9f9f9;
+            }
+
+            .product-image-container {
+                width: 100%;
+                height: 200px;
+                background-color: #e0e0e0; /* Fond gris pour les images placeholder */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .product-image {
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+            }
+
+            .placeholder-image {
+                width: 100%;
+                height: 100%;
+                background-color: #ddd;
+            }
+
+            .product-info {
+                margin: 10px 0;
+            }
+
+            .product-name,
+            .product-price {
+                margin: 5px 0;
+                font-size: 14px;
+                color: #333;
+            }
+
+            .btn {
+                display: inline-block;
+                text-decoration: none;
+                background-color: #333;
+                color: white;
+                padding: 5px 10px;
+                border-radius: 5px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .btn:hover {
+                background-color: #555;
+            }
+
+            /* Section à propos */
+            .about-section {
+                text-align: center;
+                margin: 40px auto;
+                max-width: 800px; /* Limite la largeur du paragraphe */
+                line-height: 1.6; /* Lisibilité améliorée */
+                color: #333;
+                font-size: 1.1rem;
+            }
+
+            .about-section h2 {
+                margin-bottom: 20px;
+                font-size: 1.8rem;
+                color: #333;
+            }
+
+            .about-section p {
+                margin: 0 auto;
+                text-align: justify;
+            }
+        </style>
     {% endif %}
 {% endblock %}
