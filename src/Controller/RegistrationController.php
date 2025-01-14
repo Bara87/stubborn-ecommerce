@@ -14,13 +14,14 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Security\Core\Role\Role;
 
 class RegistrationController extends AbstractController
 {
     #[Route('/register', name: 'app_register')]
     public function register(
         Request $request,
-        UserPasswordHasherInterface $passwordHasher,
+        UserPasswordHasherInterface $userPasswordHasher,
         EntityManagerInterface $entityManager,
         MailerInterface $mailer
     ): Response {
@@ -30,12 +31,24 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Encoder le mot de passe
+            // Le RepeatedType a déjà vérifié que les mots de passe correspondent
+            // On récupère donc directement le mot de passe validé
             $plainPassword = $form->get('plainPassword')->getData();
-            $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
+            
+            // Hash du mot de passe
+            $hashedPassword = $userPasswordHasher->hashPassword(
+                $user,
+                $plainPassword
+            );
+            $user->setPassword($hashedPassword);
 
-            // Ajouter un rôle par défaut
-            $user->setRoles(['ROLE_USER']);
+            // Vérification du code admin
+            $adminCode = $form->get('adminCode')->getData();
+            if ($adminCode === $this->getParameter('app.admin_code')) {
+                $user->setRoles(['ROLE_ADMIN']);
+            } else {
+                $user->setRoles(['ROLE_USER']);
+            }
 
             // Désactiver le compte par défaut
             $user->setIsActive(false);

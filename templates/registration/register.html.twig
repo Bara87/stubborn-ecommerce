@@ -1,50 +1,113 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Inscription{% endblock %}
+{% block title %}S'inscrire{% endblock %}
 
 {% block body %}
-<div style="display: flex; justify-content: center; align-items: center; height: 70vh;">
-    <div style="border: 1px solid #ccc; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 5px; width: 300px;">
-        <h2 style="font-size: 18px; margin-bottom: 15px;">Créer un compte</h2>
+<style>
+    .register-container {
+        max-width: 400px;
+        margin: 100px auto;
+        padding: 20px;
+        border: 2px solid #000;
+        border-radius: 5px;
+    }
 
-        {{ form_start(registrationForm) }}
-        
-            <div style="margin-bottom: 10px;">
-                {{ form_label(registrationForm.name, 'Nom utilisateur :', {'label_attr': {'style': 'display: block; font-size: 14px;'}}) }}
-                {{ form_widget(registrationForm.name, {'attr': {'style': 'width: 100%; padding: 5px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;'}}) }}
-                {{ form_errors(registrationForm.name) }}
-            </div>
+    .register-title {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
 
-            <div style="margin-bottom: 10px;">
-                {{ form_label(registrationForm.email, 'Adresse mail :', {'label_attr': {'style': 'display: block; font-size: 14px;'}}) }}
-                {{ form_widget(registrationForm.email, {'attr': {'style': 'width: 100%; padding: 5px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;'}}) }}
-                {{ form_errors(registrationForm.email) }}
-            </div>
+    .form-group {
+        margin-bottom: 15px;
+    }
 
-            <div style="margin-bottom: 15px;">
-                {{ form_label(registrationForm.plainPassword, 'Mot de passe :', {'label_attr': {'style': 'display: block; font-size: 14px;'}}) }}
-                {{ form_widget(registrationForm.plainPassword, {'attr': {'style': 'width: 100%; padding: 5px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;'}}) }}
-                {{ form_errors(registrationForm.plainPassword) }}
-            </div>
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #333;
+    }
 
-            <div style="margin-bottom: 15px;">
-                {{ form_label(registrationForm.deliveryAddress, 'Adresse de livraison :', {'label_attr': {'style': 'display: block; font-size: 14px;'}}) }}
-                {{ form_widget(registrationForm.deliveryAddress, {'attr': {'style': 'width: 100%; padding: 5px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;'}}) }}
-                {{ form_errors(registrationForm.deliveryAddress) }}
-            </div>
+    .form-group input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
 
-            <button type="submit" style="width: 100%; background-color: #007bff; color: white; border: none; padding: 8px; font-size: 14px; border-radius: 4px; cursor: pointer;">
-                Créer un compte
-            </button>
-        
-        {{ form_end(registrationForm) }}
-        
-        <div style="margin-top: 15px; text-align: center; font-size: 14px;">
-            <p>Déjà inscrit ?</p>
-            <a href="{{ path('app_login') }}" style="display: inline-block; background-color: #339af0; color: white; padding: 6px 10px; text-decoration: none; font-size: 14px; border-radius: 4px;">
-                Se connecter
-            </a>
+    .register-button {
+        width: 100%;
+        padding: 10px;
+        background-color: #5bc0de;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .register-button:hover {
+        background-color: #46b8da;
+    }
+
+    .login-link {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .login-button {
+        display: inline-block;
+        padding: 8px 16px;
+        background-color: #5bc0de;
+        color: white;
+        text-decoration: none;
+        border-radius: 3px;
+    }
+
+    .login-button:hover {
+        background-color: #46b8da;
+    }
+</style>
+
+<div class="register-container">
+    <h1 class="register-title">S'inscrire</h1>
+
+    {{ form_start(registrationForm) }}
+        <div class="form-group">
+            {{ form_label(registrationForm.name, 'Nom utilisateur :') }}
+            {{ form_widget(registrationForm.name) }}
         </div>
+
+        <div class="form-group">
+            {{ form_label(registrationForm.email, 'Adresse mail :') }}
+            {{ form_widget(registrationForm.email) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(registrationForm.deliveryAddress, 'Adresse de livraison :') }}
+            {{ form_widget(registrationForm.deliveryAddress) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(registrationForm.plainPassword.first, 'Mot de passe :') }}
+            {{ form_widget(registrationForm.plainPassword.first) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(registrationForm.plainPassword.second, 'Confirmer le mot de passe :') }}
+            {{ form_widget(registrationForm.plainPassword.second) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(registrationForm.adminCode, 'Code administrateur :') }}
+            {{ form_widget(registrationForm.adminCode) }}
+        </div>
+
+        <button type="submit" class="register-button">Créer un compte</button>
+    {{ form_end(registrationForm) }}
+
+    <div class="login-link">
+        <p>Déjà inscrit ?</p>
+        <a href="{{ path('app_login') }}" class="login-button">Se Connecter</a>
     </div>
 </div>
 {% endblock %}

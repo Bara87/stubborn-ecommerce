@@ -1,59 +1,55 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Back-Office - Modifier un Sweatshirt{% endblock %}
+{% block title %}Back-Office - Ajouter un Sweatshirt{% endblock %}
 
 {% block body %}
 <div class="container">
-    <h1 style="width: fit-content; margin: 0 auto 3rem auto;">Back-Office - Modifier un Sweatshirt</h1>
+    <h1 style="width: fit-content; margin: 0 auto 3rem auto;">Back-Office - Ajouter un Sweatshirt</h1>
 
     <div class="add-product-form mb-4" style="background-color: #ffebee; padding: 20px; border: 1px solid #ddd;">
-        <form method="POST" enctype="multipart/form-data" action="{{ path('admin_sweatshirt_edit', {'id': product.id}) }}" id="sweatshirtForm">
+        <form method="POST" enctype="multipart/form-data" action="{{ path('admin_sweatshirt_create') }}" id="sweatshirtForm">
             <div style="display: grid; grid-template-columns: 100px auto auto auto auto auto auto auto auto; gap: 20px; align-items: start;">
                 <div class="image-placeholder" style="width: 100px; height: 100px; background: #fff; display: flex; align-items: center; justify-content: center; border: 1px solid #ddd;">
-                    {% if product.imagePath %}
-                        <img src="{{ asset(product.imagePath) }}" alt="{{ product.name }}" style="max-width: 100%; max-height: 100%;">
-                    {% else %}
-                        <span>X</span>
-                    {% endif %}
+                    <span>X</span>
                 </div>
                 
                 <div>
                     <div>Nom</div>
-                    <input type="text" id="name" name="name" class="form-control" value="{{ product.name }}" required>
+                    <input type="text" id="name" name="name" class="form-control" required>
                 </div>
 
                 <div>
                     <div>Prix</div>
-                    <input type="number" id="price" step="0.01" name="price" class="form-control" value="{{ product.price }}" required>
+                    <input type="number" id="price" step="0.01" name="price" class="form-control" required>
                 </div>
 
                 <div>
                     <div>Stock XS</div>
-                    <input type="number" id="stock_xs" name="stock_xs" class="form-control" value="{{ product.sizes.XS }}" min="0" required>
+                    <input type="number" id="stock_xs" name="stock_xs" class="form-control" value="0" min="0" required>
                 </div>
 
                 <div>
                     <div>Stock S</div>
-                    <input type="number" id="stock_s" name="stock_s" class="form-control" value="{{ product.sizes.S }}" min="0" required>
+                    <input type="number" id="stock_s" name="stock_s" class="form-control" value="0" min="0" required>
                 </div>
 
                 <div>
                     <div>Stock M</div>
-                    <input type="number" id="stock_m" name="stock_m" class="form-control" value="{{ product.sizes.M }}" min="0" required>
+                    <input type="number" id="stock_m" name="stock_m" class="form-control" value="0" min="0" required>
                 </div>
 
                 <div>
                     <div>Stock L</div>
-                    <input type="number" id="stock_l" name="stock_l" class="form-control" value="{{ product.sizes.L }}" min="0" required>
+                    <input type="number" id="stock_l" name="stock_l" class="form-control" value="0" min="0" required>
                 </div>
 
                 <div>
                     <div>Stock XL</div>
-                    <input type="number" id="stock_xl" name="stock_xl" class="form-control" value="{{ product.sizes.XL }}" min="0" required>
+                    <input type="number" id="stock_xl" name="stock_xl" class="form-control" value="0" min="0" required>
                 </div>
 
                 <div style="align-self: end; transform: translateX(-150px);">
-                    <button type="submit" class="btn btn-light" id="submitBtn">MODIFIER</button>
+                    <button type="submit" class="btn btn-light" id="submitBtn">AJOUTER</button>
                 </div>
             </div>
 
@@ -101,5 +97,12 @@ document.getElementById('image').addEventListener('change', function(e) {
         reader.readAsDataURL(e.target.files[0]);
     }
 });
+
+document.getElementById('sweatshirtForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    console.log('Données du formulaire:', Object.fromEntries(formData));
+    this.submit();
+});
 </script>
-{% endblock %}
+{% endblock %} 

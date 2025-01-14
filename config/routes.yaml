@@ -69,3 +69,8 @@ api_products:
   path: /api/products
   controller: App\Controller\ProductController::index
   methods: GET
+
+create_checkout_session:
+    path: /create-checkout-session
+    controller: App\Controller\PaymentController::createCheckoutSession
+    methods: [POST]

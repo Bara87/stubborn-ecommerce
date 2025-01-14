@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\SweatshirtRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 
@@ -18,6 +20,9 @@ class Sweatshirt
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[Assert\NotNull(message: 'Le prix ne peut pas être vide')]
+    #[Assert\Type(type: 'float', message: 'Le prix doit être un nombre')]
+    #[Assert\Positive(message: 'Le prix doit être supérieur à 0')]
     #[ORM\Column]
     private ?float $price = null;
 

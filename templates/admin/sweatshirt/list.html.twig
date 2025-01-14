@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Back-Office{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    {# Liste des produits #}
+    {% for product in products %}
+        <div class="product-item mb-3" style="border: 1px solid #ddd; padding: 20px;">
+            <div style="display: grid; grid-template-columns: 100px auto auto auto auto auto auto auto auto; gap: 20px; align-items: start;">
+                <div class="image-placeholder" style="width: 100px; height: 100px; background: #fff; display: flex; align-items: center; justify-content: center; border: 1px solid #ddd;">
+                    {% if product.imagePath %}
+                        <img src="{{ asset(product.imagePath) }}" alt="{{ product.name }}" style="max-width: 100%; max-height: 100%;">
+                    {% else %}
+                        <span>X</span>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <div>Nom</div>
+                    <input type="text" value="{{ product.name|escape }}" class="form-control" readonly disabled>
+                </div>
+
+                <div>
+                    <div>Prix</div>
+                    <input type="text" value="{{ product.price|escape }}€" class="form-control" readonly disabled>
+                </div>
+
+                <div>
+                    <div>Stock XS</div>
+                    <input type="text" value="{{ product.sizes.XS|escape }}" class="form-control" readonly disabled>
+                </div>
+
+                <div>
+                    <div>Stock S</div>
+                    <input type="text" value="{{ product.sizes.S|escape }}" class="form-control" readonly disabled>
+                </div>
+
+                <div>
+                    <div>Stock M</div>
+                    <input type="text" value="{{ product.sizes.M|escape }}" class="form-control" readonly disabled>
+                </div>
+
+                <div>
+                    <div>Stock L</div>
+                    <input type="text" value="{{ product.sizes.L|escape }}" class="form-control" readonly disabled>
+                </div>
+
+                <div>
+                    <div>Stock XL</div>
+                    <input type="text" value="{{ product.sizes.XL|escape }}" class="form-control" readonly disabled>
+                </div>
+
+                <div style="align-self: end; transform: translateX(-150px);">
+                    <form action="{{ path('admin_sweatshirt_delete', {'id': product.id}) }}" method="POST" style="display: inline;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
+                        <button type="submit" class="btn btn-light me-2" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')">SUPPRIMER</button>
+                    </form>
+                    <button onclick="window.location.href='{{ path('admin_sweatshirt_edit', {'id': product.id}) }}'" class="btn btn-light">MODIFIER</button>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<style>
+.form-control {
+    border: 1px solid #ddd;
+    padding: 5px;
+    width: 100%;
+}
+
+.btn {
+    border: 1px solid #ddd;
+    background: white;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.image-placeholder {
+    color: #999;
+    font-size: 24px;
+}
+</style>
+{% endblock %} 

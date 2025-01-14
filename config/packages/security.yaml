@@ -17,25 +17,12 @@ security:
             security: false
 
         main:
-            stateless: false
-            
-            form_login:
-                login_path: app_login
-                check_path: app_login
-                username_parameter: email
-                password_parameter: password
-                csrf_parameter: _csrf_token
-                csrf_token_id: authenticate
-                enable_csrf: true
-            
+            lazy: true
+            provider: app_user_provider
+            custom_authenticator: App\Security\LoginFormAuthenticator
             logout:
                 path: app_logout
-                target: app_login
-            
-            # Entry point pour déterminer la méthode d'authentification par défaut
-            entry_point: form_login
-
-            # Configuration de la fonctionnalité "Se souvenir de moi"
+                target: home
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800
@@ -49,6 +36,9 @@ security:
         - { path: ^/cart, roles: ROLE_USER }
         - { path: ^/products, roles: ROLE_USER }
         - { path: ^/product, roles: ROLE_USER }
+        - { path: ^/payment, roles: ROLE_USER }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
         
 
 # Configuration spécifique pour l'environnement "test"

@@ -1,11 +1,16 @@
-
 # This file is the entry point to configure your own services.
 # Files in the packages/ subdirectory configure your dependencies.
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    stripe_test_secret_key: '%env(STRIPE_TEST_SECRET_KEY)%'
+    stripe_test_public_key: '%env(STRIPE_TEST_PUBLIC_KEY)%'
+    app.domain: '%env(APP_DOMAIN)%'
     upload_dir: '%kernel.project_dir%/public/uploads/images'
+    app.admin_code: '%env(ADMIN_REGISTRATION_CODE)%'
+    kernel.secret: '%env(APP_SECRET)%'
+    images_directory: '%kernel.project_dir%/public/uploads'
 
 services:
     

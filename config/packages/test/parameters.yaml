@@ -1,0 +1,4 @@
+parameters:
+    stripe_test_secret_key: 'sk_test_mock_key'
+    stripe_test_public_key: 'pk_test_mock_key'
+    app.domain: 'http://localhost' 

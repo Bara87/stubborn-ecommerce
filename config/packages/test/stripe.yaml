@@ -1,0 +1,4 @@
+parameters:
+    stripe_test_secret_key: '%env(STRIPE_TEST_SECRET_KEY)%'
+    stripe_test_public_key: '%env(STRIPE_TEST_PUBLIC_KEY)%'
+    app.domain: '%env(APP_DOMAIN)%' 

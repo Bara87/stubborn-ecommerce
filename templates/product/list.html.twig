@@ -3,157 +3,275 @@
 {% block title %}Liste des Produits{% endblock %}
 
 {% block body %}
+<div class="page-container">
+    <div class="top-row">
+        <!-- Filtre de prix -->
+        <div class="filter-sidebar">
+            <h3>Fourchette de prix</h3>
+            <form method="get" action="{{ path('app_products') }}" class="filter-form" id="priceFilterForm">
+                <div class="price-ranges">
+                    <div class="price-range {% if selectedRange is null %}selected{% endif %}">
+                        <label>
+                            <input type="radio" name="priceRange" value="" {% if selectedRange is null %}checked{% endif %} onchange="this.form.submit()">
+                            Tous les produits
+                        </label>
+                    </div>
+                    <div class="price-range {% if selectedRange == '10-29' %}selected{% endif %}">
+                        <label>
+                            <input type="radio" name="priceRange" value="10-29" {% if selectedRange == '10-29' %}checked{% endif %} onchange="this.form.submit()">
+                            10 à 29 €
+                        </label>
+                    </div>
+                    <div class="price-range {% if selectedRange == '30-35' %}selected{% endif %}">
+                        <label>
+                            <input type="radio" name="priceRange" value="30-35" {% if selectedRange == '30-35' %}checked{% endif %} onchange="this.form.submit()">
+                            30 à 35 €
+                        </label>
+                    </div>
+                    <div class="price-range {% if selectedRange == '35-50' %}selected{% endif %}">
+                        <label>
+                            <input type="radio" name="priceRange" value="35-50" {% if selectedRange == '35-50' %}checked{% endif %} onchange="this.form.submit()">
+                            35 à 50 €
+                        </label>
+                    </div>
+                </div>
+            </form>
+        </div>
 
-<!-- Titre centré -->
-<h1 style="text-align: center;">Liste des Produits</h1>
-
-<!-- Liste des produits -->
-<div class="product-list">
-    <!-- Barre de recherche sans cadrage -->
-    <div class="filter-item" style="border: none; box-shadow: none; background-color: transparent; padding: 0;">
-        <form method="get" action="{{ path('app_products') }}" class="filter-form">
-            <label for="minPrice">Prix minimum</label>
-            <input type="number" name="minPrice" id="minPrice" step="0.01" value="{{ app.request.query.get('minPrice', '') }}">
-
-            <label for="maxPrice">Prix maximum</label>
-            <input type="number" name="maxPrice" id="maxPrice" step="0.01" value="{{ app.request.query.get('maxPrice', '') }}">
-
-            <button type="submit">Filtrer</button>
-        </form>
+        <!-- Container pour les 2 premiers produits -->
+        <div class="top-products">
+            {% for product in products|slice(0, 2) %}
+                <div class="product-card">
+                    <div class="product-image">
+                        {% if product.imagePath %}
+                            <img src="{{ product.imagePath }}" alt="{{ product.name }}">
+                        {% else %}
+                            <div class="placeholder-image">
+                                <div class="cross"></div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <p class="product-name">Nom : {{ product.name }}</p>
+                        <p class="product-price">Prix : {{ product.price }} €</p>
+                        <a href="{{ path('app_product_detail', { id: product.id }) }}" class="voir-button">VOIR</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 
-    <!-- Produits -->
-    {% for product in products %}
-        <div class="product-card">
-            <div class="product-image-container">
-                {% if product.imagePath %}
-                    <a href="{{ path('app_product_detail', {'id': product.id}) }}">
-                        <img src="{{ product.imagePath }}" alt="{{ product.name }}" class="product-image">
-                    </a>
-                {% else %}
-                    <div class="placeholder-image"></div>
-                {% endif %}
+    <!-- Reste des produits (par 3) -->
+    <div class="products-grid">
+        {% for product in products|slice(2) %}
+            <div class="product-card">
+                <div class="product-image">
+                    {% if product.imagePath %}
+                        <img src="{{ product.imagePath }}" alt="{{ product.name }}">
+                    {% else %}
+                        <div class="placeholder-image">
+                            <div class="cross"></div>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="product-info">
+                    <p class="product-name">Nom : {{ product.name }}</p>
+                    <p class="product-price">Prix : {{ product.price }} €</p>
+                    <a href="{{ path('app_product_detail', { id: product.id }) }}" class="voir-button">VOIR</a>
+                </div>
             </div>
-            <div class="product-info">
-                <p class="product-name">Nom : {{ product.name }}</p>
-                <p class="product-price">Prix : {{ product.price }} €</p>
-            </div>
-            <a href="{{ path('app_product_detail', { id: product.id }) }}" class="btn">VOIR</a>
-        </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
 </div>
 
-<!-- Styles CSS -->
 <style>
-    /* Conteneur principal des produits */
-    .product-list {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 20px; /* Espacement entre les cartes */
-        margin: 20px;
-        margin-bottom: 130px;
+    .page-container {
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 0 20px;
     }
 
-    /* Carte produit */
-    .product-card {
-        border: 2px solid #ccc;
-        border-radius: 5px;
-        width: 250px; /* Largeur fixe */
-        padding: 10px;
-        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    .top-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);  /* 3 colonnes égales */
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .filter-sidebar {
+        padding: 15px;
+        height: fit-content;
+        border: 2px solid #ddd;
+    }
+
+    .filter-sidebar h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: normal;
+        border: 2px solid #ddd;
+        padding: 5px;
+        margin-bottom: 15px;
         text-align: center;
-        background-color: #f9f9f9;
     }
 
-    .product-image-container {
-        width: 100%;
-        height: 200px;
-        background-color: #e0e0e0; /* Fond gris si aucune image */
+    .price-ranges {
         display: flex;
-        align-items: center;
-        justify-content: center;
+        flex-direction: column;
+        margin: 0 -15px;  /* Étend les options jusqu'aux bords du cadre */
+    }
+
+    .price-range {
+        text-align: left;
+        padding: 5px 15px;  /* Padding horizontal pour aligner avec le cadre */
+        cursor: pointer;
+        width: 100%;  /* Prend toute la largeur */
+    }
+
+    .price-range:hover,
+    .price-range.selected {
+        background-color: #e3f2fd;  /* Bleu clair au survol */
+    }
+
+    .price-range label {
+        display: block;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .price-range input[type="radio"] {
+        margin-top: 5px;
+    }
+
+    .top-products {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);  /* 2 colonnes égales */
+        gap: 20px;
+        grid-column: 2 / span 2;  /* Occupe les 2 dernières colonnes */
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    /* Styles existants pour les cartes produits */
+    .product-card {
+        border: 2px solid #000;
+        border-radius: 5px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
     }
 
     .product-image {
-        max-width: 100%;
-        max-height: 100%;
+        width: 100%;
+        aspect-ratio: 1;
+        border: 2px solid #ddd;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 100%;
         object-fit: contain;
+        display: block;
     }
 
     .placeholder-image {
         width: 100%;
         height: 100%;
-        background-color: #ddd;
+        position: relative;
+        background: white;
+    }
+
+    .cross {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    .cross:before,
+    .cross:after {
+        content: '';
+        position: absolute;
+        background: #000;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 2px;
+    }
+
+    .cross:before {
+        transform: rotate(45deg);
+    }
+
+    .cross:after {
+        transform: rotate(-45deg);
     }
 
     .product-info {
-        margin: 10px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
     }
 
     .product-name,
     .product-price {
-        margin: 5px 0;
-        font-size: 14px;
-        color: #333;
+        margin: 0;
+        font-size: 16px;
     }
 
-    .btn {
-        display: inline-block;
-        text-decoration: none;
-        background-color: #333;
-        color: white;
-        padding: 5px 10px;
+    .voir-button {
+        align-self: flex-end;
+        padding: 5px 15px;
+        background: white;
+        border: 2px solid #000;
         border-radius: 5px;
+        text-decoration: none;
+        color: #000;
         font-weight: bold;
-        cursor: pointer;
     }
 
-    .btn:hover {
-        background-color: #555;
+    .voir-button:hover {
+        background: #f0f0f0;
     }
 
-    /* Barre de filtre */
+    /* Styles pour le formulaire de filtre */
     .filter-item {
         width: 100%;
         text-align: center;
-        margin-bottom: 20px;
+        margin: 20px 0;
     }
 
     .filter-form {
         display: flex;
         justify-content: center;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-
-    .filter-form label {
-        text-align: left;
-        font-size: 14px;
-        color: #333;
+        gap: 20px;
+        align-items: center;
     }
 
     .filter-form input {
         padding: 5px;
-        font-size: 14px;
-        border: 1px solid #ccc;
+        border: 2px solid #000;
         border-radius: 5px;
     }
 
     .filter-form button {
-        padding: 5px 10px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
+        padding: 5px 15px;
+        background: white;
+        border: 2px solid #000;
         border-radius: 5px;
         cursor: pointer;
-        font-size: 14px;
         font-weight: bold;
     }
 
     .filter-form button:hover {
-        background-color: #45a049;
+        background: #f0f0f0;
     }
 </style>
-
 {% endblock %}

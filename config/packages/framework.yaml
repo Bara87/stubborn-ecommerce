@@ -1,15 +1,14 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
-    secret: '%env(APP_SECRET)%'
+    test: true
+    session:
+        storage_factory_id: session.storage.factory.mock_file
+    profiler:
+        collect: false
 
-    # Note that the session will be started ONLY if you read or write from it.
-    session: true
-
-    #esi: true
-    #fragments: true
-
-when@test:
-    framework:
-        test: true
-        session:
-            storage_factory_id: session.storage.factory.mock_file
+parameters:
+    stripe.test_mode: true
+    stripe.test_cards:
+        success: '4242424242424242'
+        failure: '4000000000000002'
+        three_d_secure: '4000000000003220'
