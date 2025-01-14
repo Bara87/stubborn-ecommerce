@@ -1,148 +1,82 @@
 <?php
 
-namespace App\Controller;
+namespace App\Tests\Controller;
 
-use App\Repository\SweatshirtRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
+use App\Tests\WebTestCase;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Annotation\Route;
-use Doctrine\ORM\EntityManagerInterface;
 
-class CartController extends AbstractController
+class CartControllerTest extends WebTestCase
 {
-    private $entityManager;
+    private $testUser;
+    private $testProduct;
 
-    // Injection de l'EntityManagerInterface dans le constructeur
-    public function __construct(EntityManagerInterface $entityManager)
+    protected function setUp(): void
     {
-        $this->entityManager = $entityManager;
+        parent::setUp();
+        
+        $this->testUser = $this->createTestUser();
+        $this->testProduct = $this->createTestProduct();
     }
 
-    #[Route('/cart', name: 'app_cart')]
-    public function index(SessionInterface $session): Response
+    public function testAddToCartValidation(): void
     {
-        $cart = $session->get('cart', []); // Récupère les articles du panier
-        $total = 0;
+        $this->client->loginUser($this->testUser);
 
-        // Calculer le total de la commande
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
-        }
-
-        return $this->render('cart/index.html.twig', [
-            'cart' => $cart,
-            'total' => $total,
+        $this->client->request('POST', '/cart/add/'.$this->testProduct->getId(), [
+            'size' => 'M',
+            'quantity' => 0
         ]);
+        $this->assertResponseRedirects();
     }
 
-    #[Route('/cart/add/{id}', name: 'app_cart_add', methods: ['POST'])]
-    public function addToCart(int $id, Request $request, SessionInterface $session, SweatshirtRepository $repository): Response
+    public function testCartOperations(): void
     {
-        $cart = $session->get('cart', []); // Récupère le panier ou initialise un tableau vide
+        $this->client->loginUser($this->testUser);
 
-        // Récupérer le produit par ID
-        $product = $repository->find($id);
-
-        if (!$product) {
-            throw $this->createNotFoundException('Produit introuvable.');
-        }
-
-        // Récupérer la taille et la quantité depuis la requête POST
-        $size = $request->request->get('size');
-        $quantity = (int) $request->request->get('quantity');
-
-        // Vérifier que la taille et la quantité existent
-        if (!$size) {
-            $this->addFlash('danger', 'Veuillez sélectionner une taille.');
-            return $this->redirectToRoute('app_product_detail', ['id' => $id]);
-        }
-
-        // Vérifier si la quantité demandée est disponible dans le stock
-        $sizes = $product->getSizes();
-        if (!isset($sizes[$size]) || $quantity > $sizes[$size]) {
-            $this->addFlash('danger', 'La quantité demandée dépasse le stock disponible.');
-            return $this->redirectToRoute('app_product_detail', ['id' => $id]);
-        }
-
-        // Ajouter ou mettre à jour le produit dans le panier
-        $cartKey = $id . '_' . $size; // Clé unique basée sur l'ID et la taille
-        if (isset($cart[$cartKey])) {
-            // Si le produit est déjà dans le panier, on met à jour la quantité
-            $cart[$cartKey]['quantity'] += $quantity;
-        } else {
-            // Sinon, on ajoute le produit avec la quantité demandée
-            $cart[$cartKey] = [
-                'id' => $product->getId(),
-                'name' => $product->getName(),
-                'price' => $product->getPrice(),
-                'size' => $size,
-                'quantity' => $quantity,
-            ];
-        }
-
-        // Sauvegarder les modifications dans la session
-        $session->set('cart', $cart);
-
-        // Mise à jour du stock en base de données
-        $sizes[$size] -= $quantity;
-        if ($sizes[$size] < 0) {
-            $sizes[$size] = 0; // Empêcher un stock négatif
-        }
-        $product->setSizes($sizes);
-
-        // Enregistrer les modifications dans la base de données
-        $this->entityManager->flush();
-
-        $this->addFlash('success', 'Produit ajouté au panier.');
-        return $this->redirectToRoute('app_cart');
+        // 1. Ajouter au panier
+        $this->client->request('POST', '/cart/add/'.$this->testProduct->getId(), [
+            'size' => 'M',
+            'quantity' => 2
+        ]);
+        
+        $this->assertResponseRedirects();
+        $this->client->followRedirect();
+        
+        // 2. Vérifier le contenu du panier
+        $cartKey = $this->testProduct->getId() . '_M';
+        $cart = $this->client->getRequest()->getSession()->get('cart', []);
+        
+        $this->assertArrayHasKey($cartKey, $cart, 'Le produit devrait être dans le panier');
+        $this->assertEquals(2, $cart[$cartKey]['quantity'], 'La quantité devrait être 2');
+        
+        // 3. Supprimer du panier
+        $this->client->request('GET', '/cart/remove/'.$this->testProduct->getId().'/M');
+        
+        $this->assertResponseRedirects();
+        $this->client->followRedirect();
+        
+        // 4. Vérifier que le panier est vide
+        $cart = $this->client->getRequest()->getSession()->get('cart', []);
+        $this->assertEmpty($cart, 'Le panier devrait être vide');
     }
 
-    #[Route('/cart/remove/{id}/{size}', name: 'app_cart_remove')]
-    public function remove(int $id, string $size, SessionInterface $session): Response
+    public function testCartTotal(): void
     {
-        $cart = $session->get('cart', []);
+        $this->client->loginUser($this->testUser);
 
-        // Utiliser la clé unique basée sur l'ID et la taille pour trouver et supprimer l'élément
-        $cartKey = $id . '_' . $size;
+        $this->client->request('POST', '/cart/add/'.$this->testProduct->getId(), [
+            'size' => 'M',
+            'quantity' => 2
+        ]);
 
-        // Vérifier si le produit existe dans le panier
-        if (isset($cart[$cartKey])) {
-            unset($cart[$cartKey]); // Supprimer l'article
-            $session->set('cart', $cart);
+        $this->assertResponseRedirects();
+        $this->client->followRedirect();
 
-            $this->addFlash('success', 'Produit retiré du panier.');
-        } else {
-            $this->addFlash('warning', 'Produit non trouvé dans le panier.');
-        }
+        $cart = $this->client->getRequest()->getSession()->get('cart', []);
+        $total = array_reduce($cart, function($sum, $item) {
+            return $sum + ($item['price'] * $item['quantity']);
+        }, 0);
 
-        return $this->redirectToRoute('app_cart'); // Rediriger vers la page du panier
-    }
-
-    #[Route('/cart/checkout', name: 'app_cart_checkout')]
-    public function checkout(SessionInterface $session): Response
-    {
-        $cart = $session->get('cart', []);
-
-        if (empty($cart)) {
-            $this->addFlash('warning', 'Votre panier est vide.');
-            return $this->redirectToRoute('app_cart');
-        }
-
-        // Calculer le total
-        $total = 0;
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
-        }
-
-        // Passer le total à la session, si nécessaire
-        $session->set('checkout_total', $total);
-
-        // Afficher la page de checkout (panier) avant la redirection vers le paiement
-    return $this->render('cart/checkout.html.twig', [
-        'cart' => $cart,
-        'total' => $total,
-    ]);
+        $this->assertEquals(59.80, $total, 'Le total devrait être 59.80');
     }
 }

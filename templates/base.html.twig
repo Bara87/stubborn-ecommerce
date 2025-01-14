@@ -19,6 +19,7 @@
                 padding: 10px 20px;
                 background-color: #f8f9fa;
                 border-bottom: 2px solid #ddd;
+                margin-bottom: 5rem;
             }
 
             header .logo {
@@ -60,14 +61,34 @@
 
             /* Style du footer */
             footer {
-                background-color: #f8f9fa;
+                background-color: #fff;
                 border-top: 2px solid #ddd;
                 padding: 20px;
-                text-align: center;
+                margin-top: 50px;
             }
 
-            footer section {
+            .footer-content {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
+            }
+
+            .footer-content h3 {
+                font-size: 16px;
+                font-weight: normal;
                 margin-bottom: 10px;
+                border: 2px solid #ddd;
+                padding: 5px;
+                display: inline-block;
+            }
+
+            .footer-info {
+                margin-top: 10px;
+            }
+
+            .footer-info p {
+                margin: 5px 0;
+                color: #333;
             }
         </style>
         {% block stylesheets %}{% endblock %}
@@ -89,8 +110,8 @@
                         <li><a href="{{ path('login') }}" class="{% if app.request.pathinfo == path('login') %}active{% endif %}">Se connecter</a></li>
                     {% else %}
                         {% if is_granted('ROLE_ADMIN') %}
-                            <li><a href="{{ path('admin_sweatshirt_create') }}" class="{% if app.request.pathinfo == path('admin_sweatshirt_create') %}active{% endif %}">Back-Office</a></li>
-                            <li><a href="{{ path('admin_sweatshirt_list') }}" class="{% if app.request.pathinfo == path('admin_sweatshirt_list') %}active{% endif %}">Boutique (Admin)</a></li>
+                            <li><a href="{{ path('admin_sweatshirt_list') }}" class="{% if app.request.pathinfo == path('admin_sweatshirt_list') %}active{% endif %}">Back-office</a></li>
+                            <li><a href="{{ path('admin_sweatshirt_create') }}" class="{% if app.request.pathinfo == path('admin_sweatshirt_create') %}active{% endif %}">Boutique</a></li>
                         {% else %}
                             <li><a href="{{ path('home') }}" class="{% if app.request.pathinfo == path('home') %}active{% endif %}">Accueil</a></li>
                             <li><a href="{{ path('products') }}" class="{% if app.request.pathinfo == path('products') %}active{% endif %}">Boutique</a></li>
@@ -107,25 +128,13 @@
         </div>
 
         <footer>
-            <section>
-                <h3>Adresse</h3>
-                <p>Piccadilly Circus, London W1J 0DA, Royaume-Uni</p>
-                <p>Email : stubborn@blabla.com</p>
-            </section>
-            <section>
-                <h3>Liens utiles</h3>
-                <a href="{{ path('home') }}">Accueil</a> | 
-                <a href="{{ path('products') }}">Boutique</a> | 
-                <a href="{{ path('cart') }}">Panier</a> | 
-                
-            </section>
-            <section>
-                <h3>Suivez-nous</h3>
-                <a href="#">Facebook</a> | 
-                <a href="#">Twitter</a> | 
-                <a href="#">Instagram</a> | 
-                <a href="#">LinkedIn</a>
-            </section>
+            <div class="footer-content">
+                <h3>Informations de la société</h3>
+                <div class="footer-info">
+                    <p>Piccadilly Circus, London W1J 0DA, Royaume-Uni</p>
+                    <p>Email : stubborn@blabla.com</p>
+                </div>
+            </div>
         </footer>
     </body>
 </html>

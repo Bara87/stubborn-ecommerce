@@ -17,16 +17,15 @@ class SweatshirtRepository extends ServiceEntityRepository
     }
      
 
-    public function findByPriceRange(float $minPrice, float $maxPrice)
+    public function findByPriceRange(float $minPrice, float $maxPrice): array
     {
-        $qb = $this->createQueryBuilder('s')
-                   ->where('s.price >= :minPrice')
-                   ->andWhere('s.price <= :maxPrice')
-                   ->setParameter('minPrice', $minPrice)
-                   ->setParameter('maxPrice', $maxPrice)
-                   ->getQuery();
-
-        return $qb->getResult();
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.price >= :minPrice')
+            ->andWhere('s.price <= :maxPrice')
+            ->setParameter('minPrice', $minPrice)
+            ->setParameter('maxPrice', $maxPrice)
+            ->getQuery()
+            ->getResult();
     }
     //    /**
     //     * @return Sweatshirt[] Returns an array of Sweatshirt objects

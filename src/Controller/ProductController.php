@@ -13,20 +13,19 @@ class ProductController extends AbstractController
     #[Route('/products', name: 'app_products')]
     public function index(SweatshirtRepository $repository, Request $request): Response
     {
-        // Récupérer les filtres de la requête (par exemple, fourchette de prix)
-        $minPrice = (float) $request->query->get('minPrice', 0);
-        $maxPrice = (float) $request->query->get('maxPrice', PHP_INT_MAX);
-
-        // Si une plage de prix est définie, appliquer le filtre
-        if ($minPrice !== null && $maxPrice !== null) {
-            $products = $repository->findByPriceRange($minPrice, $maxPrice);
+        $priceRange = $request->query->get('priceRange');
+        
+        // Définir les plages de prix en fonction de la sélection
+        if ($priceRange) {
+            list($minPrice, $maxPrice) = explode('-', $priceRange);
+            $products = $repository->findByPriceRange((float)$minPrice, (float)$maxPrice);
         } else {
-            // Sinon, récupérer tous les produits
             $products = $repository->findAll();
         }
 
         return $this->render('product/list.html.twig', [
             'products' => $products,
+            'selectedRange' => $priceRange // Pour maintenir la sélection dans le template
         ]);
     }
 

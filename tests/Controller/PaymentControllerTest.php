@@ -1,55 +1,125 @@
 <?php
 
-// tests/Controller/PaymentControllerTest.php
-
 namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Service\StripeService;
+use App\Tests\Service\MockStripeService;
 
 class PaymentControllerTest extends WebTestCase
 {
-    public function testPaymentPage()
-    {
-        $client = static::createClient();
-        $client->request('GET', '/payment');
-        
-        $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'Paiement'); // Vérifiez que la page contient un certain texte, ou vérifiez le rendu de la page
-    }
+    private $client;
+    private $entityManager;
+    private $testUser;
 
-    public function testCreateCheckoutSession()
+    protected function setUp(): void
     {
-        $client = static::createClient();
+        parent::setUp();
         
-        // Simulez un panier dans la session
-        $client->getContainer()->get('session')->set('cart', [
-            ['name' => 'Produit A', 'price' => 100, 'quantity' => 1],
-            ['name' => 'Produit B', 'price' => 200, 'quantity' => 2],
+        $this->client = static::createClient([
+            'environment' => 'test'
         ]);
         
-        $client->getContainer()->get('session')->set('checkout_total', 500);
+        // Remplacer le service Stripe par notre mock
+        self::getContainer()->set(
+            StripeService::class,
+            new MockStripeService(
+                self::getContainer()->get('parameter_bag'),
+                self::getContainer()->get('logger')
+            )
+        );
+
+        // Récupérer l'entity manager
+        $this->entityManager = self::getContainer()->get(EntityManagerInterface::class);
+
+        // Créer l'utilisateur de test
+        $this->testUser = new User();
+        $this->testUser->setEmail('test@example.com');
+        $this->testUser->setName('Test User');
         
-        $client->request('GET', '/create-checkout-session');
+        // Hasher le mot de passe
+        $passwordHasher = self::getContainer()->get(UserPasswordHasherInterface::class);
+        $hashedPassword = $passwordHasher->hashPassword($this->testUser, 'test123');
+        $this->testUser->setPassword($hashedPassword);
         
-        // Vérifier si l'utilisateur est redirigé vers Stripe
-        $this->assertResponseRedirects('http://127.0.0.1:8000/payment/success');
+        // Persister l'utilisateur
+        $this->entityManager->persist($this->testUser);
+        $this->entityManager->flush();
     }
 
-    public function testPaymentSuccessPage()
+    public function testPaymentPageRequiresAuthentication(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/payment/success');
-        
-        $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'Paiement réussi');
+        $this->client->request('GET', '/payment');
+        $this->assertResponseRedirects('/login');
     }
 
-    public function testPaymentCancelPage()
+    public function testCreateCheckoutSessionWithEmptyCart(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/payment/cancel');
-        
-        $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'Paiement annulé');
+        $this->client->loginUser($this->testUser);
+        $this->client->request('POST', '/create-checkout-session');
+
+        $this->assertResponseStatusCodeSame(400);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArrayHasKey('error', $responseData);
     }
-}
+
+    public function testCreateCheckoutSessionWithValidCart(): void
+    {
+        $this->client->loginUser($this->testUser);
+
+        // Simuler un panier dans la session
+        $session = $this->client->getRequest()->getSession();
+        $session->set('cart', [
+            '1_M' => [
+                'id' => 1,
+                'name' => 'Test Sweatshirt',
+                'price' => 29.90,
+                'quantity' => 1,
+                'size' => 'M',
+                'imagePath' => 'test.jpg'
+            ]
+        ]);
+
+        $this->client->request('POST', '/create-checkout-session');
+
+        $this->assertResponseIsSuccessful();
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArrayHasKey('id', $responseData);
+        $this->assertArrayHasKey('url', $responseData);
+    }
+
+    public function testPaymentSuccess(): void
+    {
+        $this->client->loginUser($this->testUser);
+        $this->client->request('GET', '/payment/success', [
+            'session_id' => 'test_session_id'
+        ]);
+
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testPaymentCancel(): void
+    {
+        $this->client->loginUser($this->testUser);
+        $this->client->request('GET', '/payment/cancel');
+        $this->assertResponseIsSuccessful();
+    }
+
+    protected function tearDown(): void
+    {
+        if ($this->testUser) {
+            $this->entityManager->remove($this->testUser);
+            $this->entityManager->flush();
+        }
+
+        parent::tearDown();
+        
+        $this->entityManager->close();
+        $this->entityManager = null;
+        $this->client = null;
+        $this->testUser = null;
+    }
+} 

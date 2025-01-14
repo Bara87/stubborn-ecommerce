@@ -1,194 +1,205 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Panier{% endblock %}
+
 {% block body %}
 <style>
-    /* Conteneur principal */
     .cart-container {
-        width: 100%;
-        max-width: 1400px; /* Conteneur large */
+        max-width: 1200px;
         margin: 50px auto;
         padding: 20px;
-        box-sizing: border-box;
     }
 
-    /* Produit individuel */
     .cart-item {
         display: flex;
-        align-items: center;
-        padding: 20px;
-        border: 1px solid #ccc;
-        margin-bottom: 30px;
-        border-radius: 5px;
-        background-color: #fff;
         gap: 20px;
+        padding: 20px;
+        border: 2px solid #000;
+        margin-bottom: 20px;
+        position: relative;
+        min-height: 180px;
     }
 
-    /* Colonne image */
     .cart-item-image {
+        width: 150px;
+        height: 150px;
+        border: 2px solid #000;
+        position: relative;
+        overflow: hidden;
         flex-shrink: 0;
     }
 
     .cart-item-image img {
-        width: 150px; /* Taille plus grande */
-        height: 150px;
+        width: 100%;
+        height: 100%;
         object-fit: cover;
-        border: 1px solid #ddd;
-        border-radius: 5px;
+        display: block;
     }
 
-    /* Colonne informations */
+    .cart-item-image .placeholder {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .placeholder::before,
+    .placeholder::after {
+        content: '';
+        position: absolute;
+        background: #000;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 2px;
+    }
+
+    .placeholder::before {
+        transform: rotate(45deg);
+    }
+
+    .placeholder::after {
+        transform: rotate(-45deg);
+    }
+
     .cart-item-info {
+        flex: 1;
         display: flex;
-        justify-content: space-between; /* Aligner les informations sur la même ligne */
-        flex: 2;
-        gap: 20px;
-        font-size: 1.2rem;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .cart-item-details {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        padding-right: 20px;
     }
 
     .cart-item-info p {
-        margin: 5px 0;
-        color: #333;
-        font-weight: 500;
+        margin: 0;
+        font-size: 16px;
     }
 
-    /* Colonne actions */
-    .cart-item-actions {
-        display: flex;
-        justify-content: flex-start; /* S'assurer que le bouton est aligné à gauche */
-        flex-direction: column;
-        margin-top: 10px;
-    }
-
-    .cart-item-actions button {
-        padding: 12px 20px;
-        font-size: 1rem;
-        background-color: #e74c3c;
-        color: #fff;
-        border: none;
-        cursor: pointer;
+    .remove-button {
+        padding: 8px 16px;
+        background: white;
+        border: 2px solid #000;
         border-radius: 5px;
-        transition: background-color 0.3s ease;
+        cursor: pointer;
+        align-self: flex-end;
+        text-decoration: none;
+        color: black;
     }
 
-    .cart-item-actions button:hover {
-        background-color: #c0392b;
+    .remove-button:hover {
+        color: black;
+        text-decoration: none;
     }
 
-    /* Résumé du panier */
-    .cart-summary {
+    .cart-actions {
         display: flex;
-        justify-content: space-between; /* Aligner Total et Finaliser ma commande sur la même ligne */
-        align-items: center; /* Alignement vertical */
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 20px;
         margin-top: 30px;
     }
 
-    .cart-summary .total {
-        font-size: 1.5rem;
-        font-weight: bold;
-    }
-
-    /* Boutons dans la section résumé */
-    .cart-summary .checkout-button,
-    .cart-summary .continue-shopping-button {
-        padding: 12px 20px;
-        font-size: 1.1rem;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: bold;
-        transition: background-color 0.3s ease;
-    }
-
-    /* Bouton Finaliser ma commande */
-    .checkout-button {
-        background-color: #4CAF50;
-        color: white;
-    }
-
-    .checkout-button:hover {
-        background-color: #45a049;
-    }
-
-    /* Bouton Continuer mes achats avec un fond plus moderne */
-    .continue-shopping-button {
-        background-color: #3498db; /* Nouveau fond plus agréable */
-        color: white;
-        margin-top: 10px;
-    }
-
-    .continue-shopping-button:hover {
-        background-color: #2980b9; /* Effet au survol pour un fond plus foncé */
-    }
-
-    /* Style spécifique pour le formulaire */
-    .checkout-form {
+    .cart-summary {
         display: flex;
-        justify-content: flex-end; /* Aligner à droite */
-        margin-top: 20px;
+        gap: 20px;
     }
 
-    .checkout-form button {
-        padding: 12px 20px;
-        font-size: 1.1rem;
-        border: none;
+    .total {
+        padding: 10px 20px;
+        border: 2px solid #000;
+    }
+
+    .checkout-button {
+        padding: 10px 20px;
+        background: #ffcccb;
+        border: 2px solid #000;
         border-radius: 5px;
         cursor: pointer;
-        font-weight: bold;
-        background-color: #4CAF50;
-        color: white;
-        transition: background-color 0.3s ease;
     }
 
-    .checkout-form button:hover {
-        background-color: #45a049;
+    .continue-shopping {
+        padding: 10px 20px;
+        background: #90EE90;
+        border: 2px solid #000;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        color: black;
+        display: inline-block;
+    }
+
+    .continue-shopping:hover {
+        text-decoration: none;
+        color: black;
     }
 </style>
 
 <div class="cart-container">
-    <h1>Votre panier</h1>
-
     {% if cart is empty %}
         <p>Votre panier est vide.</p>
     {% else %}
-        <!-- Liste des produits -->
         {% for item in cart %}
             <div class="cart-item">
-                <!-- Colonne image -->
                 <div class="cart-item-image">
-                    <img src="{{ item.imagePath }}" alt="{{ item.name }}">
+                    {% if item.imagePath %}
+                        <img src="{{ item.imagePath }}" alt="{{ item.name }}">
+                    {% else %}
+                        <div class="placeholder"></div>
+                    {% endif %}
                 </div>
 
-                <!-- Colonne informations -->
                 <div class="cart-item-info">
-                    <p><strong>Nom :</strong> {{ item.name }}</p>
-                    <p><strong>Prix :</strong> {{ item.price }} €</p>
-                    <p><strong>Taille :</strong> {{ item.size }}</p>
-                </div>
-
-                <!-- Colonne actions : bouton sous les informations -->
-                <div class="cart-item-actions">
-                    <a href="{{ path('app_cart_remove', {id: item.id, size: item.size}) }}">
-                        <button>Retirer du panier</button>
+                    <div class="cart-item-details">
+                        <p>Nom : {{ item.name }}</p>
+                        <p>Prix : {{ item.price }} €</p>
+                        <p>Taille : {{ item.size }}</p>
+                    </div>
+                    
+                    <a href="{{ path('cart_remove', {'id': item.id, 'size': item.size}) }}" class="remove-button">
+                        RETIRER DU PANIER
                     </a>
                 </div>
             </div>
         {% endfor %}
 
-        <!-- Résumé du panier -->
-        <div class="cart-summary">
-            <div class="total">Total : {{ total | number_format(2, '.', ',') }} €</div>
+        <div class="cart-actions">
+            <div class="cart-summary">
+                <div class="total">TOTAL : {{ total }} €</div>
+                <button id="checkout-button" class="checkout-button">FINALISER MA COMMANDE</button>
+            </div>
+            <a href="{{ path('app_products') }}" class="continue-shopping">CONTINUER MES ACHATS</a>
         </div>
-
-        <!-- Formulaire pour passer à la page de paiement -->
-        <form action="{{ path('create_checkout_session') }}" method="POST" class="checkout-form">
-            <button type="submit" class="checkout-button">Finaliser ma commande</button>
-        </form>
-
-        <!-- Bouton Continuer mes achats -->
-        <a href="{{ path('app_products') }}">
-            <button class="continue-shopping-button">Continuer mes achats</button>
-        </a>
     {% endif %}
 </div>
+
+<script>
+document.getElementById('checkout-button').addEventListener('click', function() {
+    fetch('/create-checkout-session', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(session) {
+        if (session.url) {
+            window.location.href = session.url;
+        } else if (session.error) {
+            alert(session.error);
+        }
+    })
+    .catch(function(error) {
+        console.error('Error:', error);
+        alert('Une erreur est survenue');
+    });
+});
+</script>
 
 {% endblock %}

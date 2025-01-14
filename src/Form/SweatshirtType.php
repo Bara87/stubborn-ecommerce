@@ -9,7 +9,9 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Validator\Constraints\Positive;
 
 
 class SweatshirtType extends AbstractType
@@ -22,9 +24,18 @@ class SweatshirtType extends AbstractType
             'label' => 'Nom du Sweatshirt',
             'attr' => ['placeholder' => 'Nom du sweatshirt']
         ])
-        ->add('price', NumberType::class, [
-            'label' => 'Prix du Sweatshirt',
-            'attr' => ['placeholder' => 'Prix en €']
+        ->add('price', MoneyType::class, [
+            'label' => 'Prix',
+            'currency' => 'EUR',
+            'constraints' => [
+                new Positive([
+                    'message' => 'Le prix doit être supérieur à 0'
+                ])
+            ],
+            'attr' => [
+                'min' => 0.01,
+                'step' => 0.01
+            ]
         ])
         // Champ pour les tailles et quantités
         ->add('sizes', CollectionType::class, [

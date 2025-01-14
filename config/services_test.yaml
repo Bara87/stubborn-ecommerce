@@ -1,0 +1,6 @@
+services:
+    App\Service\StripeService:
+        public: true
+        arguments:
+            $params: '@parameter_bag'
+            $logger: '@logger' 
